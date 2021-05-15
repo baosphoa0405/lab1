@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package baotpg.products;
+package baotpg.resources;
 
 /**
  *
  * @author Admin
  */
-public class ProductDTO {
+public class ResourceDTO {
 
     private String productID, productName, color, categoryID;
     private int quanlity;
 
-    public ProductDTO(String productID, String productName, String color, String categoryID, int quanlity) {
+    public ResourceDTO(String productID, String productName, String color, String categoryID, int quanlity) {
         this.productID = productID;
         this.productName = productName;
         this.color = color;

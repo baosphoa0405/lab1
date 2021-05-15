@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,20 +46,20 @@ public class LoginServlet extends HttpServlet {
         String url = FAIL;
         try {
             response.setContentType("text/html;charset=UTF-8");
-            String userID = request.getParameter("userID").trim();
+            String email = request.getParameter("email").trim();
             String password = request.getParameter("password").trim();
             UsersDAO userDAO = new UsersDAO();
-            UserDTO user = userDAO.checkLogin(userID, password);
+            UserDTO user = userDAO.checkLogin(email, password);
             HttpSession session = request.getSession();
             boolean valid = false;
             boolean checkCapCha = false;
             String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
             System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
-            request.setAttribute("valueID", userID);
+            request.setAttribute("valueEmail", email);
             request.setAttribute("valuePW", password);
-            if (userID.isEmpty()) {
+            if (email.isEmpty()) {
                 valid = true;
-                request.setAttribute("userID", "userID is empty");
+                request.setAttribute("email", "email is empty");
             }
             if (password.isEmpty()) {
                 valid = true;
@@ -79,7 +80,9 @@ public class LoginServlet extends HttpServlet {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        } catch (NamingException ex) {
+            ex.printStackTrace();
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }

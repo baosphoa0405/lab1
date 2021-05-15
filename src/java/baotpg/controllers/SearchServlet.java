@@ -5,14 +5,15 @@
  */
 package baotpg.controllers;
 
-import baotpg.products.ProductDTO;
-import baotpg.products.ProductsDAO;
+import baotpg.resources.ResourceDTO;
+import baotpg.resources.ResourcesDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -42,21 +43,25 @@ public class SearchServlet extends HttpServlet {
             // search category
             String categorySelect = request.getParameter("category");
             // search name
-            ProductsDAO productDao = new ProductsDAO();
+            ResourcesDAO productDao = new ResourcesDAO();
             String nameSearch = request.getParameter("nameSearch");
             System.out.println("nameSearch" + nameSearch);
             if (categorySelect != null) {
                 request.setAttribute("categorySelect", categorySelect);
-                ArrayList<ProductDTO> listProductFilterByCategory = productDao.getAllListsProductByCategory(categorySelect);
+                ArrayList<ResourceDTO> listProductFilterByCategory = productDao.getAllListReourcesByCategory(categorySelect);
                 request.setAttribute("listProductByCategory", listProductFilterByCategory);
             }
             if (nameSearch != null) {
                 request.setAttribute("nameSearch", nameSearch);
-                ArrayList<ProductDTO> listProductFilterByName = productDao.getAllListsProductByName(nameSearch);
+                ArrayList<ResourceDTO> listProductFilterByName = productDao.getAllListReourceByName(nameSearch);
+                int count = productDao.getCountProductsByName(nameSearch);
+                System.out.println("count" + count);
                 request.setAttribute("listProductByName", listProductFilterByName);
                 System.out.println("listProductFilterByName" + listProductFilterByName);
             }
         } catch (SQLException ex) {
+            Logger.getLogger(SearchServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
             Logger.getLogger(SearchServlet.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             request.getRequestDispatcher("LoadProductServlet").forward(request, response);

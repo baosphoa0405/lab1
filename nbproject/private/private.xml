@@ -3,12 +3,19 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/VerifyCodeServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/LoginGoogleServlet.java</file>
             <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/LoadProductServlet.java</file>
-            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/DispatchController.java</file>
-            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/web/ListProduct.jsp</file>
-            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/SearchServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/web/Register.jsp</file>
             <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/LoginServlet.java</file>
-            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/categories/CategoriesDTO.java</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/users/UsersError.java</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/RegisterServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/DispatchController.java</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/resources/ResourcesDAO.java</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/web/Verify.jsp</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/controllers/SearchServlet.java</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/web/Login.jsp</file>
+            <file>file:/C:/Users/Admin/Desktop/J3.L.P0016/src/java/baotpg/users/UsersDAO.java</file>
         </group>
     </open-files>
 </project-private>

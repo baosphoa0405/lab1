@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package baotpg.utils;
+
 import baotpg.users.UserDTO;
 import java.util.Properties;
 import java.util.Random;
@@ -14,6 +15,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 /**
  *
  * @author Admin
@@ -27,23 +29,21 @@ public class SendEmail {
     }
 
     //send email to the user email
-    public boolean sendEmail(UserDTO user,String code) {
+    public boolean sendEmail(UserDTO user, String code) {
         boolean test = false;
 
         String toEmail = user.getEmail();
-        String fromEmail = "baosphoa0403@gmail.com";
+        String fromEmail = "baotpgse140647@fpt.edu.vn";
         String password = "songohan1234";
 
         try {
 
             // your host email smtp server details
             Properties pr = new Properties();
-            pr.setProperty("mail.smtp.host", "smtp.mail.com");
-            pr.setProperty("mail.smtp.port", "587");
-            pr.setProperty("mail.smtp.auth", "true");
-            pr.setProperty("mail.smtp.starttls.enable", "true");
-            pr.put("mail.smtp.socketFactory.port", "587");
-            pr.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            pr.put("mail.smtp.auth", "true");
+            pr.put("mail.smtp.starttls.enable", "true");
+            pr.put("mail.smtp.host", "smtp.gmail.com");
+            pr.put("mail.smtp.port", 587);
 
             //get session to authenticate the host email address and password
             Session session = Session.getInstance(pr, new Authenticator() {
@@ -52,7 +52,7 @@ public class SendEmail {
                     return new PasswordAuthentication(fromEmail, password);
                 }
             });
-            System.out.println("session gi đó " + session);
+//            System.out.println("session gi đó " + session);
             //set email message details
             Message mess = new MimeMessage(session);
 

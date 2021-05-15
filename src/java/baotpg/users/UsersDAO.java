@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import baotpg.utils.DBHelper;
+import javax.naming.NamingException;
 
 /**
  *
@@ -33,28 +34,68 @@ public class UsersDAO {
         }
     }
 
-    public UserDTO checkLogin(String userID, String password) throws SQLException {
+    public UserDTO checkLogin(String userID, String password) throws SQLException, NamingException {
         UserDTO user = null;
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "Select userID, name, phone, password, address, statusID, roleID, createDate, email From [User]"
-                        + "Where userID = ? And password = ?";
+                String sql = "SELECT name, phone, password, address, statusID, roleID, createDate, email From [Users]"
+                        + "WhERE email = ? And password = ?";
                 pstm = cn.prepareStatement(sql);
                 pstm.setString(1, userID);
                 pstm.setString(2, password);
                 rs = pstm.executeQuery();
                 if (rs.next()) {
-                    user = new UserDTO(rs.getString("userID"), rs.getString("name"), rs.getString("phone"), rs.getString("password"), rs.getString("address"),
+                    user = new UserDTO(rs.getString("name"), rs.getString("phone"), rs.getString("password"), rs.getString("address"),
                             rs.getString("email"), rs.getInt("statusID"), rs.getInt("roleID"), rs.getDate("createDate"));
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally{
+        }finally {
             close();
         }
         return user;
     }
 
+    public boolean insertUser(UserDTO newUser) throws SQLException, NamingException {
+        boolean flag = false;
+        try {
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "INSERT into USERS(name, phone, password, address, statusID, roleID, createDate, email)"
+                        + "VALUES(?,?,?,?,?,?,?,?)";
+                pstm = cn.prepareStatement(sql);
+                pstm.setString(1, newUser.getName());
+                pstm.setString(2, newUser.getPhone());
+                pstm.setString(3, newUser.getPassword());
+                pstm.setString(4, newUser.getAddress());
+                pstm.setInt(5, newUser.getStatusID());
+                pstm.setInt(6, newUser.getRoleID());
+                pstm.setDate(7, newUser.getCreateDate());
+                pstm.setString(8, newUser.getEmail());
+                flag = pstm.executeUpdate() > 0;
+            }
+        } finally {
+            close();
+        }
+        return flag;
+    }
+    
+      public boolean updateUser(String email) throws SQLException, NamingException {
+        boolean flag = false;
+        try {
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "update USERS set statusID = ?"
+                        + "where email = ?";
+                pstm = cn.prepareStatement(sql);
+                pstm.setInt(1, 2);
+                pstm.setString(2, email);
+                flag = pstm.executeUpdate() > 0;
+            }
+        } finally {
+            close();
+        }
+        return flag;
+    }
+    
 }

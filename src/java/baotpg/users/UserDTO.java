@@ -12,12 +12,12 @@ import java.sql.Date;
  * @author Admin
  */
 public class UserDTO {
-    private String uersID, name, phone, password, address, email;
+
+    private String name, phone, password, address, email;
     private int statusID, roleID;
     private Date createDate;
 
-    public UserDTO(String uersID, String name, String phone, String password, String address, String email, int statusID, int roleID, Date createDate) {
-        this.uersID = uersID;
+    public UserDTO(String name, String phone, String password, String address, String email, int statusID, int roleID, Date createDate) {
         this.name = name;
         this.phone = phone;
         this.password = password;
@@ -26,14 +26,6 @@ public class UserDTO {
         this.statusID = statusID;
         this.roleID = roleID;
         this.createDate = createDate;
-    }
-
-    public String getUersID() {
-        return uersID;
-    }
-
-    public void setUersID(String uersID) {
-        this.uersID = uersID;
     }
 
     public String getName() {

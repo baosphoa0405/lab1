@@ -20,5 +20,6 @@
         </form>
         <p style="color: green;">${requestScope.verifySuccess}</p>
         <p style="color: green;">${requestScope.verifyFail}</p>
+        <a href="Login.jsp">Login</a>
     </body>
 </html>

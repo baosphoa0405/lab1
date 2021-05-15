@@ -6,12 +6,13 @@
 package baotpg.controllers;
 
 import baotpg.categories.CategoriesDAO;
-import baotpg.products.ProductsDAO;
+import baotpg.resources.ResourcesDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,11 +39,13 @@ public class LoadProductServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             response.setContentType("text/html;charset=UTF-8");
-            ProductsDAO productDao = new ProductsDAO();
+            ResourcesDAO productDao = new ResourcesDAO();
             CategoriesDAO categoriesDAO = new CategoriesDAO();
             request.setAttribute("listCategories", categoriesDAO.getAllListCategories());
-            request.setAttribute("listProducts", productDao.getAllListProducts());
+            request.setAttribute("listProducts", productDao.getAllListReources());
         } catch (SQLException ex) {
+            Logger.getLogger(LoadProductServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
             Logger.getLogger(LoadProductServlet.class.getName()).log(Level.SEVERE, null, ex);
         }finally{
             request.getRequestDispatcher("ListProduct.jsp").forward(request, response);

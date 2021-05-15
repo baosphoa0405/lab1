@@ -5,6 +5,8 @@
  */
 package baotpg.controllers;
 
+import baotpg.users.UserDTO;
+import baotpg.users.UsersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -33,16 +35,24 @@ public class VerifyCodeServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String code = request.getParameter("code");
-        HttpSession session = request.getSession();
-        
-        String codeSession = (String) session.getAttribute("codeRandom");
-        if (code.equals(codeSession)) {
-            request.setAttribute("verifySuccess", "Verify successfully");
-        }else{
-            request.setAttribute("verifyFail", "Verify fail please check code in email");
+        try {
+            String code = request.getParameter("code");
+            HttpSession session = request.getSession();
+            UsersDAO usersDAO = new UsersDAO();
+            String codeSession = (String) session.getAttribute("codeRandom");
+            String email = request.getParameter("email").trim();
+            if (code.equals(codeSession)) {
+                boolean isActive = usersDAO.updateUser(email);
+                System.out.println("isActive " + isActive);
+                request.setAttribute("verifySuccess", "Verify successfully");
+            } else {
+                request.setAttribute("verifyFail", "Verify fail please check code in email");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            request.getRequestDispatcher("Verify.jsp").forward(request, response);
         }
-        request.getRequestDispatcher("Verify.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

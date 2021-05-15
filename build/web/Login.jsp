@@ -15,8 +15,8 @@
     <body>
         <div>
             <form action="DispatchController" method="Post">
-                UserID: <input type="text" name="userID" value="${requestScope.valueID}" /> <br/> 
-                <p style="color: red">${requestScope.userID}</p>
+                Email <input type="text" name="email" value="${requestScope.valueEmail}" /> <br/> 
+                <p style="color: red">${requestScope.email}</p>
                 Password <input type="text" name="password" value="${requestScope.valuePW}" /> <br/>
                 <p style="color: red">${requestScope.password}</p>
                 <input type="submit" value="login" name="btnAction" />
