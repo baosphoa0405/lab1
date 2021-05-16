@@ -11,6 +11,27 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>ListProduct</title>
+        <style>
+            .pagination a {
+                color: black;
+                float: left;
+                padding:  12px 18px;
+                text-decoration: none;
+            }
+            /* thiết lập style cho class active */
+            .pagination a.active {
+                background-color: dodgerblue;
+                color: white;
+                /*Thiết kế hình tròn với CSS*/
+                border-radius: 50%;
+            }
+            /* thêm màu nền khi người dùng hover vào class không active */
+            .pagination a:hover:not(.active) {
+                background-color: #ddd;
+                /*Thiết kế hình tròn với CSS*/
+                border-radius: 50%;
+            }
+        </style>
     </head>
     <body>
         <c:if test="${empty sessionScope.user}">
@@ -64,7 +85,7 @@
                         </tr>
                     </c:forEach>
                 </c:if>
-                        <!--search by category-->
+                <!--search by category-->
                 <c:if test="${not empty requestScope.listProductByCategory}">
                     <c:forEach var="item" items="${requestScope.listProductByCategory}">
                         <tr>
@@ -80,7 +101,7 @@
                         </tr>
                     </c:forEach>
                 </c:if>
-                        <!--search by name-->
+                <!--search by name-->
                 <c:if test="${not empty requestScope.listProductByName}">
                     <c:forEach var="item" items="${requestScope.listProductByName}">
                         <tr>
@@ -98,5 +119,13 @@
                 </c:if>
             </tbody>
         </table>
+        <c:if test="${not empty requestScope.pageSize}">
+            <div class="pagination">
+                <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
+                    <a href="SearchServlet?index=${i}&nameSearch=${nameSearch}">${i}</a>
+                </c:forEach>
+            </div>
+        </c:if>
+        ${requestScope.listReourcesPagnination}
     </body>
 </html>

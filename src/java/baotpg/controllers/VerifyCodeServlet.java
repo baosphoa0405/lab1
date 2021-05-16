@@ -48,6 +48,7 @@ public class VerifyCodeServlet extends HttpServlet {
             if (code.equals(codeSession)) {
                 boolean isActive = usersDAO.updateUser(email);
                 System.out.println("isActive " + isActive);
+                session.removeAttribute("codeRandom");
                 request.setAttribute("verifySuccess", "Verify successfully");
             } else {
                 request.setAttribute("verifyFail", "Verify fail please check code in email");
@@ -55,7 +56,7 @@ public class VerifyCodeServlet extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (NamingException ex) {
-            Logger.getLogger(VerifyCodeServlet.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } finally {
             request.getRequestDispatcher("Verify.jsp").forward(request, response);
         }

@@ -42,27 +42,50 @@ public class SearchServlet extends HttpServlet {
         try {
             // search category
             String categorySelect = request.getParameter("category");
+            String index = request.getParameter("index");
+            System.out.println("index" + index);
             // search name
             ResourcesDAO productDao = new ResourcesDAO();
             String nameSearch = request.getParameter("nameSearch");
             System.out.println("nameSearch" + nameSearch);
+            int countListProducts = 0;
+            int countItemInPageSize = 3;
+            int pageSize = 0;
             if (categorySelect != null) {
                 request.setAttribute("categorySelect", categorySelect);
                 ArrayList<ResourceDTO> listProductFilterByCategory = productDao.getAllListReourcesByCategory(categorySelect);
                 request.setAttribute("listProductByCategory", listProductFilterByCategory);
+//                countListProducts = productDao.getCountResoucesByName(categorySelect);
+//                pageSize = countListProducts / countItemInPageSize;
+//                if (countListProducts % countItemInPageSize != 0) {
+//                    pageSize += 1;
+//                }
             }
             if (nameSearch != null) {
                 request.setAttribute("nameSearch", nameSearch);
                 ArrayList<ResourceDTO> listProductFilterByName = productDao.getAllListReourceByName(nameSearch);
-                int count = productDao.getCountProductsByName(nameSearch);
-                System.out.println("count" + count);
+                countListProducts = productDao.getCountResoucesByName(nameSearch);
                 request.setAttribute("listProductByName", listProductFilterByName);
-                System.out.println("listProductFilterByName" + listProductFilterByName);
+                pageSize = countListProducts / countItemInPageSize;
+                if (countListProducts % countItemInPageSize != 0) {
+                    pageSize += 1;
+                }
+                request.setAttribute("pageSize", pageSize);
+                if (index == null) {
+                    ArrayList<ResourceDTO> listReourcesPagnination = productDao.getListResourcePagination(nameSearch, pageSize, 1);
+                    System.out.println(listReourcesPagnination);
+                    request.setAttribute("listReourcesPagnination", listReourcesPagnination);
+                } else {
+                    ArrayList<ResourceDTO> listReourcesPagnination = productDao.getListResourcePagination(nameSearch, pageSize, Integer.parseInt(index));
+                    System.out.println(listReourcesPagnination);
+                    request.setAttribute("listReourcesPagnination", listReourcesPagnination);
+                }
             }
+
         } catch (SQLException ex) {
-            Logger.getLogger(SearchServlet.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } catch (NamingException ex) {
-            Logger.getLogger(SearchServlet.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } finally {
             request.getRequestDispatcher("LoadProductServlet").forward(request, response);
         }

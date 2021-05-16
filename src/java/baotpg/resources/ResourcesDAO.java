@@ -93,15 +93,15 @@ public class ResourcesDAO {
         return listProducts;
     }
 
-    public int getCountProductsByName(String keyValue) throws SQLException, NamingException {
+    public int getCountResoucesByName(String keyValue) throws SQLException, NamingException {
         int count = 0;
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "select COUNT(*) from dbo.Products where productName LIKE ?";
+                String sql = "select COUNT(*) from dbo.Resources where productName LIKE ?";
                 pstm = cn.prepareStatement(sql);
                 pstm.setString(1, "%" + keyValue + "%");
-                pstm.executeQuery();
+                rs = pstm.executeQuery();
                 if (rs.next()) {
                     count = rs.getInt(1);
                 }
@@ -112,4 +112,28 @@ public class ResourcesDAO {
         return count;
     }
 
+    public ArrayList<ResourceDTO> getListResourcePagination(String productName, int pageSize, int index) throws SQLException, NamingException {
+        ArrayList<ResourceDTO> listResources = new ArrayList<>();
+        try {
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "with X as(select ROW_NUMBER() OVER(ORDER BY productID desc) as productIDClone, productID, productName, color, categoryID, "
+                        + "quanlity from dbo.Resources where productName LIKE ? )\n"
+                        + "select * from X where productIDClone between ? * ? - 2 and ?*3";
+                pstm = cn.prepareStatement(sql);
+                pstm.setString(1, "%" + productName + "%");
+                pstm.setInt(2, pageSize);
+                pstm.setInt(3, index);
+                pstm.setInt(4, index);
+                rs = pstm.executeQuery();
+                while (rs.next()) {
+                    listResources.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity")));
+                }
+
+            }
+        } finally {
+            close();
+        }
+        return listResources;
+    }
 }
