@@ -60,6 +60,10 @@ public class RegisterServlet extends HttpServlet {
                 checkError = true;
                 userErrors.setEmailErrorFormat("Email invalid Format abc@gmail.com");
             }
+            if (usersDAO.checkDuplicateEmail(email)) {
+                checkError = true;
+                userErrors.setEmailDuplicate("Email duplicate");
+            }
             if (phone.isEmpty()) {
                 checkError = true;
                 userErrors.setPhoneError("Phone is empty");
@@ -97,6 +101,7 @@ public class RegisterServlet extends HttpServlet {
                     boolean isEmail = sm.sendEmail(user, codeRandom);
                     if (isEmail) {
                         url = SUCCESS;
+                        request.setAttribute("emailUser", user.getEmail());
                         session.setAttribute("codeRandom", codeRandom);
                     } else {
                         System.out.println("failed to send verification email");
@@ -104,8 +109,7 @@ public class RegisterServlet extends HttpServlet {
                 }
             }
         } catch (SQLException e) {
-            userErrors.setEmailDuplicate("Email duplicate");
-            request.setAttribute("errorRegister", userErrors);
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

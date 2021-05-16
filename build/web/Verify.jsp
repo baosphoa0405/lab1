@@ -16,6 +16,7 @@
         <h1>Verify Page</h1>
         <form method="Post" action="DispatchController">
             Code <input type="text" name="code" value="" />
+            <input type="hidden" name="email" value="${requestScope.emailUser}" />
             <input type="submit" value="Submit Code" name="btnAction"/>
         </form>
         <p style="color: green;">${requestScope.verifySuccess}</p>

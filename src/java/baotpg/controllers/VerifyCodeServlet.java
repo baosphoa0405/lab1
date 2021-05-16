@@ -9,6 +9,10 @@ import baotpg.users.UserDTO;
 import baotpg.users.UsersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -48,8 +52,10 @@ public class VerifyCodeServlet extends HttpServlet {
             } else {
                 request.setAttribute("verifyFail", "Verify fail please check code in email");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NamingException ex) {
+            Logger.getLogger(VerifyCodeServlet.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             request.getRequestDispatcher("Verify.jsp").forward(request, response);
         }

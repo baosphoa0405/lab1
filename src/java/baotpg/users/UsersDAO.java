@@ -50,7 +50,7 @@ public class UsersDAO {
                             rs.getString("email"), rs.getInt("statusID"), rs.getInt("roleID"), rs.getDate("createDate"));
                 }
             }
-        }finally {
+        } finally {
             close();
         }
         return user;
@@ -79,17 +79,16 @@ public class UsersDAO {
         }
         return flag;
     }
-    
-      public boolean updateUser(String email) throws SQLException, NamingException {
+
+    public boolean updateUser(String email) throws SQLException, NamingException {
         boolean flag = false;
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "update USERS set statusID = ?"
+                String sql = "update USERS set statusID = 2"
                         + "where email = ?";
                 pstm = cn.prepareStatement(sql);
-                pstm.setInt(1, 2);
-                pstm.setString(2, email);
+                pstm.setString(1, email);
                 flag = pstm.executeUpdate() > 0;
             }
         } finally {
@@ -97,5 +96,24 @@ public class UsersDAO {
         }
         return flag;
     }
-    
+
+    public boolean checkDuplicateEmail(String email) throws SQLException, NamingException {
+        boolean flag = false;
+        try {
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "select name, phone, password, address, statusID, roleID, createDate, email From [Users] "
+                        + "where email = ?";
+                pstm = cn.prepareStatement(sql);
+                pstm.setString(1, email);
+                rs = pstm.executeQuery();
+                if (rs.next()) {
+                    flag = true;
+                }
+            }
+        } finally {
+            close();
+        }
+        return flag;
+    }
 }
