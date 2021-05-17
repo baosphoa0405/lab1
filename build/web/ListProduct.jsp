@@ -50,10 +50,17 @@
                 <c:forEach var="item" items="${requestScope.listCategories}">
                     <option value="${item.getCategoryID()}" ${requestScope.categorySelect eq item.getCategoryID() ? "selected" : ""}>${item.getCategoryName()}</option>
                 </c:forEach>
+                <!--                    <option></option>-->
             </select>
             Search <input type="text" name="nameSearch" value="${requestScope.nameSearch}" />
+            <label for="date">date</label>
+            <input type="date" id="date" name="date"
+                   value=""
+                   min="2018-01-01" max="2018-12-31">
             <input type="submit" name="btnAction" value="search" />
-            <input type="submit" value="Reset" name="btnAction" />
+        </form>
+        <form action="DispatchController" method="POST">
+            <input type="submit" value="Reset" name="btnAction" />    
         </form>
         <table border="1">
             <thead>
@@ -63,11 +70,12 @@
                     <th>Color</th>
                     <th>CategoryName</th>
                     <th>Quanlity</th>
+                    <th>CreateDate</th>
                 </tr>
             </thead>
             <tbody>
                 <!--ko seach gì hết--> 
-                <c:if test="${empty requestScope.listReourcesPagnination &&  empty requestScope.pageSize}">
+                <c:if test="${empty requestScope.noValue && empty requestScope.listReourcesPagnination &&  empty requestScope.pageSize}">
                     <c:forEach var="item" items="${requestScope.listProducts}">
                         <tr>
                             <td>${item.getProductID()}</td>
@@ -79,6 +87,7 @@
                                 </c:if>
                             </c:forEach>
                             <td>${item.getQuanlity()}</td>
+                            <td>${item.getCreateDate()}</td>
                         </tr>
                     </c:forEach>
                 </c:if>
@@ -95,20 +104,24 @@
                                 </c:if>
                             </c:forEach>
                             <td>${item.getQuanlity()}</td>
+                            <td>${item.getCreateDate()}</td>
                         </tr>
                     </c:forEach>
                 </c:if>
-            </tbody>
-        </table>
-        <c:if test="${not empty requestScope.pageSize}">
-            <div class="pagination">
-                <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
-                    <a id="${i}" href="SearchServlet?index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}">${i}</a>
-                </c:forEach>
-            </div>
-        </c:if>
-        <script>
-            document.getElementById('${index}').style.color = "red";
-        </script>
-    </body>
+                <c:if test="${not empty requestScope.noValue}">
+                <h1>${requestScope.noValue} </h1>
+            </c:if>
+        </tbody>
+    </table>
+    <c:if test="${not empty requestScope.pageSize}">
+        <div class="pagination">
+            <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
+                <a id="${i}" href="SearchServlet?index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}">${i}</a>
+            </c:forEach>
+        </div>
+    </c:if>
+    <script>
+        document.getElementById('${index}').style.color = "red";
+    </script>
+</body>
 </html>

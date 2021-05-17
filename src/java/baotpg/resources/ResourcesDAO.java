@@ -40,11 +40,11 @@ public class ResourcesDAO {
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "select productID, productName, color, categoryID, quanlity from dbo.Resources";
+                String sql = "select productID, productName, color, categoryID, quanlity, createDate from dbo.Resources";
                 pstm = cn.prepareStatement(sql);
                 rs = pstm.executeQuery();
                 while (rs.next()) {
-                    listProducts.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity")));
+                    listProducts.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity"), rs.getDate("createDate")));
                 }
             }
         } finally {
@@ -64,7 +64,7 @@ public class ResourcesDAO {
                 pstm.setString(1, categoryID);
                 rs = pstm.executeQuery();
                 while (rs.next()) {
-                    listProducts.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity")));
+                    listProducts.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity"), rs.getDate("createDate")));
                 }
             }
         } finally {
@@ -84,7 +84,7 @@ public class ResourcesDAO {
                 pstm.setString(1, "%" + nameProduct + "%");
                 rs = pstm.executeQuery();
                 while (rs.next()) {
-                    listProducts.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity")));
+                    listProducts.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity"), rs.getDate("createDate")));
                 }
             }
         } finally {
@@ -118,18 +118,16 @@ public class ResourcesDAO {
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "with X as(select ROW_NUMBER() OVER(ORDER BY productID desc) as productIDClone, productID, productName, color, categoryID, "
-                        + "quanlity from dbo.Resources where productName LIKE ? and CategoryID = ? )\n"
-                        + "select * from X where productIDClone between ? * ? - 2 and ?*3";
+                String sql = "with X as (select ROW_NUMBER() over (order by productID asc) as productIDClone, productID, productName, color, categoryID, quanlity, createDate from Resources where productName LIKE ? and CategoryID = ?) \n"
+                        + "select productID, productName, color, categoryID, quanlity, createDate from X where productIDClone  between ? and ?";
                 pstm = cn.prepareStatement(sql);
                 pstm.setString(1, "%" + productName + "%");
                 pstm.setString(2, CategoryID);
-                pstm.setInt(3, pageSize);
-                pstm.setInt(4, index);
-                pstm.setInt(5, index);
+                pstm.setInt(3, (pageSize * index) - 2);
+                pstm.setInt(4, index * 3);
                 rs = pstm.executeQuery();
                 while (rs.next()) {
-                    listResources.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity")));
+                    listResources.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity"), rs.getDate("createDate")));
                 }
             }
         } finally {
