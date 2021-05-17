@@ -51,13 +51,10 @@
                     <option value="${item.getCategoryID()}" ${requestScope.categorySelect eq item.getCategoryID() ? "selected" : ""}>${item.getCategoryName()}</option>
                 </c:forEach>
             </select>
-            <input type="submit" name="btnAction" value="search" />
-        </form>
-        <form action="DispatchController" method="Post">
             Search <input type="text" name="nameSearch" value="${requestScope.nameSearch}" />
-            <input type="submit" value="Search Name" name="btnAction"/>
+            <input type="submit" name="btnAction" value="search" />
+            <input type="submit" value="Reset" name="btnAction" />
         </form>
-
         <table border="1">
             <thead>
                 <tr>
@@ -70,7 +67,7 @@
             </thead>
             <tbody>
                 <!--ko seach gì hết--> 
-                <c:if test="${empty requestScope.listProductByCategory && empty requestScope.listProductByName}">
+                <c:if test="${empty requestScope.listReourcesPagnination &&  empty requestScope.pageSize}">
                     <c:forEach var="item" items="${requestScope.listProducts}">
                         <tr>
                             <td>${item.getProductID()}</td>
@@ -86,24 +83,8 @@
                     </c:forEach>
                 </c:if>
                 <!--search by category-->
-                <c:if test="${not empty requestScope.listProductByCategory}">
-                    <c:forEach var="item" items="${requestScope.listProductByCategory}">
-                        <tr>
-                            <td>${item.getProductID()}</td>
-                            <td>${item.getProductName()}</td>
-                            <td>${item.getColor()}</td>
-                            <c:forEach var="itemCategory" items="${requestScope.listCategories}">
-                                <c:if test="${item.getCategoryID() eq itemCategory.getCategoryID()}">
-                                    <td>${itemCategory.getCategoryName()}</td>       
-                                </c:if>
-                            </c:forEach>
-                            <td>${item.getQuanlity()}</td>
-                        </tr>
-                    </c:forEach>
-                </c:if>
-                <!--search by name-->
-                <c:if test="${not empty requestScope.listProductByName}">
-                    <c:forEach var="item" items="${requestScope.listProductByName}">
+                <c:if test="${ not empty requestScope.listReourcesPagnination}">
+                    <c:forEach var="item" items="${requestScope.listReourcesPagnination}">
                         <tr>
                             <td>${item.getProductID()}</td>
                             <td>${item.getProductName()}</td>
@@ -122,10 +103,12 @@
         <c:if test="${not empty requestScope.pageSize}">
             <div class="pagination">
                 <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
-                    <a href="SearchServlet?index=${i}&nameSearch=${nameSearch}">${i}</a>
+                    <a id="${i}" href="SearchServlet?index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}">${i}</a>
                 </c:forEach>
             </div>
         </c:if>
-        ${requestScope.listReourcesPagnination}
+        <script>
+            document.getElementById('${index}').style.color = "red";
+        </script>
     </body>
 </html>

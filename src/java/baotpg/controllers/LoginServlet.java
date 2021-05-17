@@ -66,11 +66,11 @@ public class LoginServlet extends HttpServlet {
                 request.setAttribute("password", "password is empty");
             }
             // Verify CAPTCHA.
-            checkCapCha = VerifyUtils.verify(gRecaptchaResponse);
-            if (!checkCapCha) {
-                valid = true;
-                request.setAttribute("errorCapCha", "Please choosen capCha");
-            }
+//            checkCapCha = VerifyUtils.verify(gRecaptchaResponse);
+//            if (!checkCapCha) {
+//                valid = true;
+//                request.setAttribute("errorCapCha", "Please choosen capCha");
+//            }
             if (!valid) {
                 if (user != null) {
                     session.setAttribute("user", user);

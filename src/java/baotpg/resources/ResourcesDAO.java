@@ -93,14 +93,15 @@ public class ResourcesDAO {
         return listProducts;
     }
 
-    public int getCountResoucesByName(String keyValue) throws SQLException, NamingException {
+    public int getCountResoucesByName(String keyValue, String categoryID) throws SQLException, NamingException {
         int count = 0;
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "select COUNT(*) from dbo.Resources where productName LIKE ?";
+                String sql = "select COUNT(*) from dbo.Resources where productName LIKE ? and CategoryID = ?";
                 pstm = cn.prepareStatement(sql);
                 pstm.setString(1, "%" + keyValue + "%");
+                pstm.setString(2, categoryID);
                 rs = pstm.executeQuery();
                 if (rs.next()) {
                     count = rs.getInt(1);
@@ -112,24 +113,24 @@ public class ResourcesDAO {
         return count;
     }
 
-    public ArrayList<ResourceDTO> getListResourcePagination(String productName, int pageSize, int index) throws SQLException, NamingException {
+    public ArrayList<ResourceDTO> getListResourcePagination(String productName, int pageSize, int index, String CategoryID) throws SQLException, NamingException {
         ArrayList<ResourceDTO> listResources = new ArrayList<>();
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
                 String sql = "with X as(select ROW_NUMBER() OVER(ORDER BY productID desc) as productIDClone, productID, productName, color, categoryID, "
-                        + "quanlity from dbo.Resources where productName LIKE ? )\n"
+                        + "quanlity from dbo.Resources where productName LIKE ? and CategoryID = ? )\n"
                         + "select * from X where productIDClone between ? * ? - 2 and ?*3";
                 pstm = cn.prepareStatement(sql);
                 pstm.setString(1, "%" + productName + "%");
-                pstm.setInt(2, pageSize);
-                pstm.setInt(3, index);
+                pstm.setString(2, CategoryID);
+                pstm.setInt(3, pageSize);
                 pstm.setInt(4, index);
+                pstm.setInt(5, index);
                 rs = pstm.executeQuery();
                 while (rs.next()) {
                     listResources.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity")));
                 }
-
             }
         } finally {
             close();
@@ -137,3 +138,6 @@ public class ResourcesDAO {
         return listResources;
     }
 }
+//index = 1 ->  1 -> 3  index*soLuongCuaPhanTuTrongTrang-2 -> index*3
+//index = 2 ->  4 -> 6
+//index = 3 ->  7 -> 9 

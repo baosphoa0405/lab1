@@ -33,6 +33,7 @@ public class DispatchController extends HttpServlet {
     private String SELECT_ACTION = "search";
     private String SEARCH_SERVLET = "SearchServlet";
     private String SEARCH_NAME_ACTION = "Search Name";
+    private String RESET_ACTION = "Reset";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -69,6 +70,9 @@ public class DispatchController extends HttpServlet {
                 url = SEARCH_SERVLET;
             }
             if (SEARCH_NAME_ACTION.equals(btnAction)) {
+                url = SEARCH_SERVLET;
+            }
+            if (RESET_ACTION.equals(btnAction)) {
                 url = SEARCH_SERVLET;
             }
         } catch (Exception e) {
