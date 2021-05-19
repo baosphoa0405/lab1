@@ -5,11 +5,12 @@
  */
 package baotpg.controllers;
 
-import baotpg.utils.VerifyUtils;
+import baotpg.requests.RequestDTO;
+import baotpg.requests.RequestsDAO;
 import baotpg.users.UserDTO;
-import baotpg.users.UsersDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,12 +26,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author Admin
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
-public class LoginServlet extends HttpServlet {
-
-    private String URL_USER = "LoadProductServlet";
-    private String FAIL = "Login.jsp";
-    private String URL_ADMIN = "ManagementRequest.jsp";
+@WebServlet(name = "BookingServlet", urlPatterns = {"/BookingServlet"})
+public class BookingServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,53 +40,25 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String url = FAIL;
         try {
             response.setContentType("text/html;charset=UTF-8");
-            String email = request.getParameter("email").trim();
-            String password = request.getParameter("password").trim();
-            UsersDAO userDAO = new UsersDAO();
-            UserDTO user = userDAO.checkLogin(email, password);
-            HttpSession session = request.getSession();
-            boolean valid = false;
-            boolean checkCapCha = false;
-            String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
-            System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
-            request.setAttribute("valueEmail", email);
-            request.setAttribute("valuePW", password);
-            if (email.isEmpty()) {
-                valid = true;
-                request.setAttribute("email", "email is empty");
+            String productID = request.getParameter("productID");
+            RequestsDAO requestDAO = new RequestsDAO();
+            HttpSession sesion = request.getSession();
+            UserDTO user = (UserDTO) sesion.getAttribute("user");
+            RequestDTO requestBooking = new RequestDTO(0, 1, Date.valueOf(java.time.LocalDate.now()), user.getEmail(), productID);
+            boolean isBooking =  requestDAO.bookingResource(requestBooking);
+            if (isBooking) {
+                request.setAttribute("bookingSuccess", "Booking SUCCESS");
+            } else {
+                request.setAttribute("bookingFail", "Booking FAIL");
             }
-            if (password.isEmpty()) {
-                valid = true;
-                request.setAttribute("password", "password is empty");
-            }
-            // Verify CAPTCHA.
-//            checkCapCha = VerifyUtils.verify(gRecaptchaResponse);
-//            if (!checkCapCha) {
-//                valid = true;
-//                request.setAttribute("errorCapCha", "Please choosen capCha");
-//            }
-            if (!valid) {
-                if (user != null) {
-                    if (user.getRoleID() == 1) {
-                        url = URL_USER;
-                        session.setAttribute("user", user);
-                    } else {
-                        url = URL_ADMIN;
-                        session.setAttribute("admin", user);                    }
-
-                } else {
-                    request.setAttribute("error", "user or password wrong");
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
         } catch (NamingException ex) {
-            ex.printStackTrace();
+            Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            request.getRequestDispatcher(url).forward(request, response);
+            request.getRequestDispatcher("LoadProductServlet").forward(request, response);
         }
 
     }

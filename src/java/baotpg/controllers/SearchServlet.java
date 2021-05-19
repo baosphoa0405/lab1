@@ -9,6 +9,7 @@ import baotpg.resources.ResourceDTO;
 import baotpg.resources.ResourcesDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -47,6 +48,8 @@ public class SearchServlet extends HttpServlet {
             ResourcesDAO productDao = new ResourcesDAO();
             String nameSearch = request.getParameter("nameSearch");
             String date = request.getParameter("date");
+            Date dateSearch = Date.valueOf(date);
+            request.setAttribute("date", dateSearch);
             System.out.println("btnRest" + date);
             int countListProducts = 0;
             int countItemInPageSize = 3;
@@ -63,11 +66,11 @@ public class SearchServlet extends HttpServlet {
                     }
                     request.setAttribute("pageSize", pageSize);
                     if (index == null) {
-                        ArrayList<ResourceDTO> listReourcesPagnination = productDao.getListResourcePagination(nameSearch, countItemInPageSize, 1, categorySelect);
+                        ArrayList<ResourceDTO> listReourcesPagnination = productDao.getListResourcePagination(nameSearch, countItemInPageSize, 1, categorySelect, dateSearch);
                         request.setAttribute("listReourcesPagnination", listReourcesPagnination);
                         request.setAttribute("index", 1);
                     } else {
-                        ArrayList<ResourceDTO> listReourcesPagnination = productDao.getListResourcePagination(nameSearch, countItemInPageSize, Integer.parseInt(index), categorySelect);
+                        ArrayList<ResourceDTO> listReourcesPagnination = productDao.getListResourcePagination(nameSearch, countItemInPageSize, Integer.parseInt(index), categorySelect, dateSearch);
                         System.out.println(listReourcesPagnination);
                         request.setAttribute("listReourcesPagnination", listReourcesPagnination);
                         request.setAttribute("index", index);

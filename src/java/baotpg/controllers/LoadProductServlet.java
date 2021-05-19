@@ -7,8 +7,10 @@ package baotpg.controllers;
 
 import baotpg.categories.CategoriesDAO;
 import baotpg.resources.ResourcesDAO;
+import com.sun.openpisces.Dasher;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,8 +43,10 @@ public class LoadProductServlet extends HttpServlet {
             response.setContentType("text/html;charset=UTF-8");
             ResourcesDAO productDao = new ResourcesDAO();
             CategoriesDAO categoriesDAO = new CategoriesDAO();
+//            Date date = Date.valueOf(java.time.LocalDate.now());
             request.setAttribute("listCategories", categoriesDAO.getAllListCategories());
             request.setAttribute("listProducts", productDao.getAllListReources());
+//            request.setAttribute("date", date);
         } catch (SQLException ex) {
             Logger.getLogger(LoadProductServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NamingException ex) {

@@ -34,16 +34,23 @@
         </style>
     </head>
     <body>
-        <c:if test="${empty sessionScope.user}">
+        <c:if test="${empty sessionScope.user && empty sessionScope.loginGG && empty sessionScope.admin}">
             <c:redirect url="Login.jsp"/>
         </c:if>
         <div style="display: flex; align-items: center">
-            <h1>hello ${sessionScope.user.getName()}</h1>
+            <c:if test="${not empty sessionScope.user.getName()}">
+                <h1>hello ${sessionScope.user.getName()}</h1>
+            </c:if>
+            <c:if test="${not empty sessionScope.loginGG}">
+               <h1>hello ${sessionScope.loginGG}</h1>
+            </c:if>
             <form action="DispatchController">
                 <input type="submit" value="logout" name="btnAction" />
             </form>
         </div>
         <h1>ListProduct</h1>
+        <h1 style="color: green">${requestScope.bookingSuccess}</h1>
+        <h1 style="color: fail">${requestScope.bookingFail}</h1>
         <label for="categories">Choose a categories</label>
         <form action="DispatchController" method="POST">
             <select id="categories" name="category">
@@ -56,7 +63,7 @@
             <label for="date">date</label>
             <input type="date" id="date" name="date"
                    value=""
-                   min="2018-01-01" max="2018-12-31">
+                   min="" max="">
             <input type="submit" name="btnAction" value="search" />
         </form>
         <form action="DispatchController" method="POST">
@@ -71,6 +78,7 @@
                     <th>CategoryName</th>
                     <th>Quanlity</th>
                     <th>CreateDate</th>
+                    <th>function</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,6 +96,12 @@
                             </c:forEach>
                             <td>${item.getQuanlity()}</td>
                             <td>${item.getCreateDate()}</td>
+                            <td>
+                                <form method="POST" action="">
+                                    <input type="hidden" name="productID" value="${item.getProductID()}" />
+                                    <input type="submit" name="btnAction" value="Booking" />
+                                </form>
+                            </td>
                         </tr>
                     </c:forEach>
                 </c:if>
@@ -116,7 +130,7 @@
     <c:if test="${not empty requestScope.pageSize}">
         <div class="pagination">
             <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
-                <a id="${i}" href="SearchServlet?index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}">${i}</a>
+                <a id="${i}" href="SearchServlet?index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}&date=${requestScope.date}">${i}</a>
             </c:forEach>
         </div>
     </c:if>

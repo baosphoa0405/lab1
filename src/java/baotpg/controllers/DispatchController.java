@@ -35,6 +35,8 @@ public class DispatchController extends HttpServlet {
     private String SEARCH_NAME_ACTION = "Search Name";
     private String RESET_ACTION = "Reset";
     private String LOAD_PRODUCT_SERVLET = "LoadProductServlet";
+    private String BOOKING_SERVLET = "BookingServlet";
+    private String BOOK_ACTION = "Booking";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -75,6 +77,9 @@ public class DispatchController extends HttpServlet {
             }
             if (RESET_ACTION.equals(btnAction)) {
                 url = LOAD_PRODUCT_SERVLET;
+            }
+            if (BOOK_ACTION.equals(btnAction)) {
+                url = BOOKING_SERVLET;
             }
         } catch (Exception e) {
 

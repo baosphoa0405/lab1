@@ -7,6 +7,7 @@ package baotpg.resources;
 
 import baotpg.utils.DBHelper;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -113,18 +114,30 @@ public class ResourcesDAO {
         return count;
     }
 
-    public ArrayList<ResourceDTO> getListResourcePagination(String productName, int pageSize, int index, String CategoryID) throws SQLException, NamingException {
+    public ArrayList<ResourceDTO> getListResourcePagination(String productName, int pageSize, int index, String CategoryID, Date dateSearch) throws SQLException, NamingException {
         ArrayList<ResourceDTO> listResources = new ArrayList<>();
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "with X as (select ROW_NUMBER() over (order by productID asc) as productIDClone, productID, productName, color, categoryID, quanlity, createDate from Resources where productName LIKE ? and CategoryID = ?) \n"
-                        + "select productID, productName, color, categoryID, quanlity, createDate from X where productIDClone  between ? and ?";
-                pstm = cn.prepareStatement(sql);
-                pstm.setString(1, "%" + productName + "%");
-                pstm.setString(2, CategoryID);
-                pstm.setInt(3, (pageSize * index) - 2);
-                pstm.setInt(4, index * 3);
+                String sql = "";
+                if (dateSearch == null) {
+                    sql = "with X as (select ROW_NUMBER() over (order by productID asc) as productIDClone, productID, productName, color, categoryID, quanlity, createDate from Resources where productName LIKE ? and CategoryID = ?) \n"
+                            + "select productID, productName, color, categoryID, quanlity, createDate from X where productIDClone  between ? and ?";
+                    pstm = cn.prepareStatement(sql);
+                    pstm.setString(1, "%" + productName + "%");
+                    pstm.setString(2, CategoryID);
+                    pstm.setInt(3, (pageSize * index) - 2);
+                    pstm.setInt(4, index * 3);
+                } else {
+                    sql = "with X as (select ROW_NUMBER() over (order by productID asc) as productIDClone, productID, productName, color, categoryID, quanlity, createDate from Resources where productName LIKE ? and CategoryID = ? and createDate = ?) \n"
+                            + "select productID, productName, color, categoryID, quanlity, createDate from X where productIDClone  between ? and ?";
+                    pstm = cn.prepareStatement(sql);
+                    pstm.setString(1, "%" + productName + "%");
+                    pstm.setString(2, CategoryID);
+                    pstm.setDate(3, dateSearch);
+                    pstm.setInt(4, (pageSize * index) - 2);
+                    pstm.setInt(5, index * 3);
+                }
                 rs = pstm.executeQuery();
                 while (rs.next()) {
                     listResources.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity"), rs.getDate("createDate")));
