@@ -7,6 +7,8 @@ package baotpg.controllers;
 
 import baotpg.requests.RequestDTO;
 import baotpg.requests.RequestsDAO;
+import baotpg.resources.ResourceDTO;
+import baotpg.resources.ResourcesDAO;
 import baotpg.users.UserDTO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -44,21 +46,37 @@ public class BookingServlet extends HttpServlet {
             response.setContentType("text/html;charset=UTF-8");
             String productID = request.getParameter("productID");
             RequestsDAO requestDAO = new RequestsDAO();
+            ResourcesDAO resourceDAO = new ResourcesDAO();
             HttpSession sesion = request.getSession();
             UserDTO user = (UserDTO) sesion.getAttribute("user");
-            RequestDTO requestBooking = new RequestDTO(0, 1, Date.valueOf(java.time.LocalDate.now()), user.getEmail(), productID);
-            boolean isBooking =  requestDAO.bookingResource(requestBooking);
-            if (isBooking) {
-                request.setAttribute("bookingSuccess", "Booking SUCCESS");
+            String emailLoginGG = (String) sesion.getAttribute("loginGG");
+            RequestDTO requestBooking = null;
+            ResourceDTO resource = resourceDAO.getDetailResource(productID); 
+            if (resource.getQuanlity() >= 1) {
+                if (user != null) {
+                    requestBooking = new RequestDTO(0, 1, Date.valueOf(java.time.LocalDate.now()), user.getEmail(), productID);
+                }
+                if (emailLoginGG != null) {
+                    requestBooking = new RequestDTO(0, 1, Date.valueOf(java.time.LocalDate.now()), emailLoginGG, productID);
+                }
+                boolean isBooking = requestDAO.bookingResource(requestBooking);
+                boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() -1 );
+                if (isBooking && updateQuanity) {
+                    request.setAttribute("bookingSuccess", "Booking SUCCESS");
+                } else {
+                    request.setAttribute("bookingFail", "Booking FAIL");
+                }
             } else {
-                request.setAttribute("bookingFail", "Booking FAIL");
+                request.setAttribute("errBooking", "Please booking another resource");
+                request.setAttribute("idProductOutOfNumber", resource.getProductID());
             }
+
         } catch (NamingException ex) {
             Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            request.getRequestDispatcher("LoadProductServlet").forward(request, response);
+            request.getRequestDispatcher("SearchServlet").forward(request, response);
         }
 
     }

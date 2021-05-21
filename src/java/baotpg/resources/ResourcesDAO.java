@@ -6,6 +6,7 @@
 package baotpg.resources;
 
 import baotpg.utils.DBHelper;
+import baotpg.utils.MyConstants;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -54,55 +55,27 @@ public class ResourcesDAO {
         return listProducts;
     }
 
-    public ArrayList<ResourceDTO> getAllListReourcesByCategory(String categoryID) throws SQLException, NamingException {
-        ArrayList<ResourceDTO> listProducts = new ArrayList<>();
-        try {
-            cn = DBHelper.makeConnection();
-            if (cn != null) {
-                String sql = "select productID, productName, color, categoryID, quanlity from dbo.Resources "
-                        + "where categoryID = ? ";
-                pstm = cn.prepareStatement(sql);
-                pstm.setString(1, categoryID);
-                rs = pstm.executeQuery();
-                while (rs.next()) {
-                    listProducts.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity"), rs.getDate("createDate")));
-                }
-            }
-        } finally {
-            close();
-        }
-        return listProducts;
-    }
-
-    public ArrayList<ResourceDTO> getAllListReourceByName(String nameProduct) throws SQLException, NamingException {
-        ArrayList<ResourceDTO> listProducts = new ArrayList<>();
-        try {
-            cn = DBHelper.makeConnection();
-            if (cn != null) {
-                String sql = "select productID, productName, color, categoryID, quanlity from dbo.Resources "
-                        + "where productName LIKE ? ";
-                pstm = cn.prepareStatement(sql);
-                pstm.setString(1, "%" + nameProduct + "%");
-                rs = pstm.executeQuery();
-                while (rs.next()) {
-                    listProducts.add(new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity"), rs.getDate("createDate")));
-                }
-            }
-        } finally {
-            close();
-        }
-        return listProducts;
-    }
-
-    public int getCountResoucesByName(String keyValue, String categoryID) throws SQLException, NamingException {
+    public int getQuanityResouces(String productName, String categoryID, Date dateSearch) throws SQLException, NamingException {
         int count = 0;
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "select COUNT(*) from dbo.Resources where productName LIKE ? and CategoryID = ?";
+                String condition = "";
+                if (categoryID != null && !categoryID.isEmpty()) {
+                    condition = "and categoryID = ? ";
+                }
+                if (dateSearch != null) {
+                    condition = "and createDate = ? ";
+                }
+                String sql = "select COUNT(*) from dbo.Resources Where productName Like ? " + condition;
                 pstm = cn.prepareStatement(sql);
-                pstm.setString(1, "%" + keyValue + "%");
-                pstm.setString(2, categoryID);
+                pstm.setString(1, "%" + productName + "%");
+                if (categoryID != null && !categoryID.isEmpty()) {
+                    pstm.setString(2, categoryID);
+                }
+                if (dateSearch != null) {
+                    pstm.setDate(2, dateSearch);
+                }
                 rs = pstm.executeQuery();
                 if (rs.next()) {
                     count = rs.getInt(1);
@@ -114,29 +87,39 @@ public class ResourcesDAO {
         return count;
     }
 
-    public ArrayList<ResourceDTO> getListResourcePagination(String productName, int pageSize, int index, String CategoryID, Date dateSearch) throws SQLException, NamingException {
+    public ArrayList<ResourceDTO> getListResourcePagination(String productName, int index, String categoryID, Date dateSearch) throws SQLException, NamingException {
         ArrayList<ResourceDTO> listResources = new ArrayList<>();
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
-                String sql = "";
-                if (dateSearch == null) {
-                    sql = "with X as (select ROW_NUMBER() over (order by productID asc) as productIDClone, productID, productName, color, categoryID, quanlity, createDate from Resources where productName LIKE ? and CategoryID = ?) \n"
-                            + "select productID, productName, color, categoryID, quanlity, createDate from X where productIDClone  between ? and ?";
-                    pstm = cn.prepareStatement(sql);
-                    pstm.setString(1, "%" + productName + "%");
-                    pstm.setString(2, CategoryID);
-                    pstm.setInt(3, (pageSize * index) - 2);
-                    pstm.setInt(4, index * 3);
-                } else {
-                    sql = "with X as (select ROW_NUMBER() over (order by productID asc) as productIDClone, productID, productName, color, categoryID, quanlity, createDate from Resources where productName LIKE ? and CategoryID = ? and createDate = ?) \n"
-                            + "select productID, productName, color, categoryID, quanlity, createDate from X where productIDClone  between ? and ?";
-                    pstm = cn.prepareStatement(sql);
-                    pstm.setString(1, "%" + productName + "%");
-                    pstm.setString(2, CategoryID);
+                String condition = "";
+                if (dateSearch != null && !categoryID.isEmpty()) {
+                    condition = "and categoryID = ? and createDate = ? ";
+                } else if (dateSearch != null) {
+                    condition = "and createDate = ? ";
+                } else if (!categoryID.isEmpty()) {
+                    condition = "and categoryID = ? ";
+                }
+                String sql = "select productID, productName, categoryID, color, quanlity, createDate from Resources where productName like ? " + condition
+                        + "order by productName asc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY ";
+                pstm = cn.prepareStatement(sql);
+                pstm.setString(1, "%" + productName + "%");
+                if (dateSearch != null && !categoryID.isEmpty()) {
+                    pstm.setString(2, categoryID);
                     pstm.setDate(3, dateSearch);
-                    pstm.setInt(4, (pageSize * index) - 2);
-                    pstm.setInt(5, index * 3);
+                    pstm.setInt(4, (index - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(5, MyConstants.QUANITY_ITEM_IN_PAGE);
+                } else if (dateSearch != null) {
+                    pstm.setDate(2, dateSearch);
+                    pstm.setInt(3, (index - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(4, MyConstants.QUANITY_ITEM_IN_PAGE);
+                } else if (!categoryID.isEmpty()) {
+                    pstm.setString(2, categoryID);
+                    pstm.setInt(3, (index - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(4, MyConstants.QUANITY_ITEM_IN_PAGE);
+                } else {
+                    pstm.setInt(2, (index - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(3, MyConstants.QUANITY_ITEM_IN_PAGE);
                 }
                 rs = pstm.executeQuery();
                 while (rs.next()) {
@@ -147,6 +130,43 @@ public class ResourcesDAO {
             close();
         }
         return listResources;
+    }
+
+    public ResourceDTO getDetailResource(String resourceID) throws NamingException, SQLException {
+        ResourceDTO resouce = null;
+        try {
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "select productID, productName, color, categoryID, quanlity, createDate from dbo.Resources where productID = ? ";
+                pstm = cn.prepareStatement(sql);
+                pstm.setString(1, resourceID);
+                rs = pstm.executeQuery();
+                if (rs.next()) {
+                    resouce = new ResourceDTO(rs.getString("productID"), rs.getString("productName"), rs.getString("color"), rs.getString("categoryID"), rs.getInt("quanlity"), rs.getDate("createDate"));
+                }
+            }
+        } finally {
+            close();
+        }
+        return  resouce;
+    }
+    
+    public boolean updateQuanityResource(String productID, int quanity) throws SQLException, NamingException{
+        boolean flag = false;
+        try {
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "update dbo.Resources SET quanlity = ? "
+                        + "where productID = ? ";
+                pstm = cn.prepareStatement(sql);
+                pstm.setInt(1, quanity);
+                pstm.setString(2, productID);
+                flag = pstm.executeUpdate() > 0 ? true : false;
+            }
+        } finally {
+            close();
+        }
+        return flag;
     }
 }
 //index = 1 ->  1 -> 3  index*soLuongCuaPhanTuTrongTrang-2 -> index*3

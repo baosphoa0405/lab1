@@ -5,8 +5,18 @@
  */
 package baotpg.controllers;
 
+import baotpg.requests.RequestDTO;
+import baotpg.requests.RequestsDAO;
+import baotpg.resources.ResourceDTO;
+import baotpg.resources.ResourcesDAO;
+import baotpg.statusRequest.StatusRequestDTO;
+import baotpg.statusRequest.StatusRequestsDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -31,8 +41,42 @@ public class LoadRequestServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        
+        try {
+            response.setContentType("text/html;charset=UTF-8");
+            String keySearch = request.getParameter("key");
+            String indexPage = request.getParameter("index");
+            RequestsDAO requestDaos = new RequestsDAO();
+            int countsListRequest = requestDaos.getCountRequests(keySearch);
+            int countItemPageSize = 20;
+            int countPageSize = countsListRequest / countItemPageSize;
+            if (countsListRequest % countItemPageSize != 0) {
+                countPageSize += 1;
+            }
+            StatusRequestsDAO statusRequestDAO = new StatusRequestsDAO();
+            ResourcesDAO reourceDAO = new ResourcesDAO();
+            ArrayList<ResourceDTO> listResources = reourceDAO.getAllListReources();
+            ArrayList<StatusRequestDTO> listStatusRequest = statusRequestDAO.getAllListStatusRequest();
+            ArrayList<RequestDTO> arrayListRequest = new ArrayList<>();
+            if (indexPage == null) {
+                arrayListRequest = requestDaos.getAllRequest(1, keySearch);
+                request.setAttribute("index", 1);
+            } else {
+                arrayListRequest = requestDaos.getAllRequest(Integer.parseInt(indexPage), keySearch);
+                request.setAttribute("index", indexPage);
+            }
+            request.setAttribute("arrayListRequest", arrayListRequest);
+            request.setAttribute("countListRequest", countPageSize);
+            request.setAttribute("listStatusRequest", listStatusRequest);
+            request.setAttribute("listResource", listResources);
+            request.setAttribute("key", keySearch);
+        } catch (SQLException ex) {
+            Logger.getLogger(LoadRequestServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(LoadRequestServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            request.getRequestDispatcher("ManagementRequest.jsp").forward(request, response);
+        }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

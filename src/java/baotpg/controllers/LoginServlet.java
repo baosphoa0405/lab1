@@ -28,9 +28,9 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
 public class LoginServlet extends HttpServlet {
 
-    private String URL_USER = "LoadProductServlet";
+    private String URL_USER = "SearchServlet";
     private String FAIL = "Login.jsp";
-    private String URL_ADMIN = "ManagementRequest.jsp";
+    private String URL_ADMIN = "LoadRequestServlet";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

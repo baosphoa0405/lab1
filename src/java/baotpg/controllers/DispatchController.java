@@ -34,9 +34,12 @@ public class DispatchController extends HttpServlet {
     private String SEARCH_SERVLET = "SearchServlet";
     private String SEARCH_NAME_ACTION = "Search Name";
     private String RESET_ACTION = "Reset";
-    private String LOAD_PRODUCT_SERVLET = "LoadProductServlet";
     private String BOOKING_SERVLET = "BookingServlet";
     private String BOOK_ACTION = "Booking";
+    private String LOAD_REQUEST_ACTION = "loadRequets";
+    private String LOAD_REQUEST_SERVLET = "LoadRequestServlet";
+    private String SEARCH_REQUEST_ACTION = "Search Request";
+    private String SEARCH_SERVLET_REQUEST = "LoadRequestServlet";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -54,8 +57,7 @@ public class DispatchController extends HttpServlet {
         String url = ERROR_JSP;
         try {
             if (btnAction == null) {
-//                url = LOGIN_JSP;
-                  url = "LoadProductServlet";
+                url = LOGIN_JSP;
             }
             if (LOGIN_ACTION.equals(btnAction)) {
                 url = LOGIN_SERVLET;
@@ -76,10 +78,16 @@ public class DispatchController extends HttpServlet {
                 url = SEARCH_SERVLET;
             }
             if (RESET_ACTION.equals(btnAction)) {
-                url = LOAD_PRODUCT_SERVLET;
+                url = SEARCH_SERVLET;
             }
             if (BOOK_ACTION.equals(btnAction)) {
                 url = BOOKING_SERVLET;
+            }
+            if (LOAD_REQUEST_ACTION.equals(btnAction)) {
+                url = LOAD_REQUEST_SERVLET;
+            }
+            if (SEARCH_REQUEST_ACTION.equals(btnAction)) {
+                url = SEARCH_SERVLET_REQUEST;
             }
         } catch (Exception e) {
 

@@ -42,7 +42,7 @@
                 <h1>hello ${sessionScope.user.getName()}</h1>
             </c:if>
             <c:if test="${not empty sessionScope.loginGG}">
-               <h1>hello ${sessionScope.loginGG}</h1>
+                <h1>hello ${sessionScope.loginGG}</h1>
             </c:if>
             <form action="DispatchController">
                 <input type="submit" value="logout" name="btnAction" />
@@ -57,7 +57,7 @@
                 <c:forEach var="item" items="${requestScope.listCategories}">
                     <option value="${item.getCategoryID()}" ${requestScope.categorySelect eq item.getCategoryID() ? "selected" : ""}>${item.getCategoryName()}</option>
                 </c:forEach>
-                <!--                    <option></option>-->
+                <option var="default">DEFAULT</option>
             </select>
             Search <input type="text" name="nameSearch" value="${requestScope.nameSearch}" />
             <label for="date">date</label>
@@ -69,6 +69,7 @@
         <form action="DispatchController" method="POST">
             <input type="submit" value="Reset" name="btnAction" />    
         </form>
+        <h1 style="color: red">${requestScope.errBooking}</h1>
         <table border="1">
             <thead>
                 <tr>
@@ -82,10 +83,10 @@
                 </tr>
             </thead>
             <tbody>
-                <!--ko seach gì hết--> 
-                <c:if test="${empty requestScope.noValue && empty requestScope.listReourcesPagnination &&  empty requestScope.pageSize}">
-                    <c:forEach var="item" items="${requestScope.listProducts}">
-                        <tr>
+                <!--ko seach gì hết-->
+                <c:if test="${not empty requestScope.listReourcesPagnination}">
+                    <c:forEach var="item" items="${requestScope.listReourcesPagnination}">
+                        <tr style="color: ${requestScope.idProductOutOfNumber eq item.getProductID() ? "red" : "black"}">
                             <td>${item.getProductID()}</td>
                             <td>${item.getProductName()}</td>
                             <td>${item.getColor()}</td>
@@ -95,9 +96,9 @@
                                 </c:if>
                             </c:forEach>
                             <td>${item.getQuanlity()}</td>
-                            <td>${item.getCreateDate()}</td>
+                            <td>${item.getCreateDate()}</td>                            
                             <td>
-                                <form method="POST" action="">
+                                <form method="POST" action="DispatchController">
                                     <input type="hidden" name="productID" value="${item.getProductID()}" />
                                     <input type="submit" name="btnAction" value="Booking" />
                                 </form>
@@ -106,34 +107,16 @@
                     </c:forEach>
                 </c:if>
                 <!--search by category-->
-                <c:if test="${ not empty requestScope.listReourcesPagnination}">
-                    <c:forEach var="item" items="${requestScope.listReourcesPagnination}">
-                        <tr>
-                            <td>${item.getProductID()}</td>
-                            <td>${item.getProductName()}</td>
-                            <td>${item.getColor()}</td>
-                            <c:forEach var="itemCategory" items="${requestScope.listCategories}">
-                                <c:if test="${item.getCategoryID() eq itemCategory.getCategoryID()}">
-                                    <td>${itemCategory.getCategoryName()}</td>       
-                                </c:if>
-                            </c:forEach>
-                            <td>${item.getQuanlity()}</td>
-                            <td>${item.getCreateDate()}</td>
-                        </tr>
-                    </c:forEach>
-                </c:if>
                 <c:if test="${not empty requestScope.noValue}">
-                <h1>${requestScope.noValue} </h1>
+                <h1 style="color: green">${requestScope.noValue} </h1>
             </c:if>
         </tbody>
     </table>
-    <c:if test="${not empty requestScope.pageSize}">
-        <div class="pagination">
-            <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
-                <a id="${i}" href="SearchServlet?index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}&date=${requestScope.date}">${i}</a>
-            </c:forEach>
-        </div>
-    </c:if>
+    <div class="pagination">
+        <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
+            <a id="${i}" href="SearchServlet?index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}&date=${requestScope.date}">${i}</a>
+        </c:forEach>
+    </div>
     <script>
         document.getElementById('${index}').style.color = "red";
     </script>

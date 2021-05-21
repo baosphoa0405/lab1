@@ -6,6 +6,7 @@
 package baotpg.requests;
 
 import baotpg.utils.DBHelper;
+import baotpg.utils.MyConstants;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,8 +35,8 @@ public class RequestsDAO {
             rs.close();
         }
     }
-    
-    public boolean bookingResource(RequestDTO requestBooking) throws NamingException, SQLException{
+
+    public boolean bookingResource(RequestDTO requestBooking) throws NamingException, SQLException {
         boolean isBook = false;
         try {
             cn = DBHelper.makeConnection();
@@ -48,22 +49,36 @@ public class RequestsDAO {
                 pstm.setString(4, requestBooking.getProductID());
                 isBook = pstm.executeUpdate() > 0;
             }
-        } finally { 
+        } finally {
             close();
         }
         return isBook;
     }
-    
-    public ArrayList<RequestDTO> getAllRequestFollowStatus(int statusReqID) throws NamingException, SQLException{
+
+    public ArrayList<RequestDTO> getAllRequest(int indexPage, String email) throws NamingException, SQLException {
         ArrayList<RequestDTO> list = new ArrayList<>();
         try {
             cn = DBHelper.makeConnection();
+
             if (cn != null) {
-                String sql = "select requestID, dateBook, statusReqID, email, productID from Requests where statusReqID = ? ";
+                String sqlCondition = "";
+                if (email != null) {
+                    sqlCondition = "email like ? ";
+                }
+                String checkWhere = sqlCondition.trim().isEmpty() == false ? "where " + sqlCondition  : "";
+                String sql = "select requestID, dateBook, statusReqID, email, productID from Requests " + checkWhere
+                        + "order by dateBook desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
                 pstm = cn.prepareStatement(sql);
-                pstm.setInt(1, statusReqID);
+                if (email != null) {
+                    pstm.setString(1,'%' + email + '%');
+                    pstm.setInt(2, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(3, MyConstants.QUANITY_ITEM_IN_PAGE);
+                } else {
+                    pstm.setInt(1, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(2, MyConstants.QUANITY_ITEM_IN_PAGE);
+                }
                 rs = pstm.executeQuery();
-                while (rs.next()) {                    
+                while (rs.next()) {
                     list.add(new RequestDTO(rs.getInt("requestID"), rs.getInt("statusReqID"), rs.getDate("dateBook"), rs.getString("email"), rs.getString("productID")));
                 }
             }
@@ -71,5 +86,31 @@ public class RequestsDAO {
             close();
         }
         return list;
+    }
+
+    public int getCountRequests(String email) throws SQLException, NamingException {
+        int count = 0;
+        try {
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String condition = "";
+                if (email != null) {
+                    condition = "email  like ? ";
+                }
+                String conditionWhere = condition.isEmpty() == false ? "where " + condition : "";
+                String sql = "select COUNT(*) from dbo.Requests " + conditionWhere;
+                pstm = cn.prepareStatement(sql);
+                if (email != null) {
+                    pstm.setString(1, '%' + email + '%');
+                }
+                rs = pstm.executeQuery();
+                if (rs.next()) {
+                    count = rs.getInt(1);
+                }
+            }
+        } finally {
+            close();
+        }
+        return count;
     }
 }
