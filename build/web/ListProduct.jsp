@@ -49,6 +49,9 @@
             </form>
         </div>
         <h1>ListProduct</h1>
+        <form method="Post" action="DispatchController">
+            <input type="submit" value="View List Booking" name="btnAction" />
+        </form>
         <h1 style="color: green">${requestScope.bookingSuccess}</h1>
         <h1 style="color: fail">${requestScope.bookingFail}</h1>
         <label for="categories">Choose a categories</label>

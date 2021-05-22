@@ -96,7 +96,7 @@ public class RequestsDAO {
                     pstm.setDate(4, dateSearch);
                     pstm.setInt(5, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
                     pstm.setInt(6, MyConstants.QUANITY_ITEM_IN_PAGE);
-                } else if(dateSearch == null && statusReqName.isEmpty()) {
+                } else if (dateSearch == null && statusReqName.isEmpty()) {
                     pstm.setInt(3, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
                     pstm.setInt(4, MyConstants.QUANITY_ITEM_IN_PAGE);
                 }
@@ -155,7 +155,7 @@ public class RequestsDAO {
         return count;
     }
 
-    public boolean updateStatusRequest(String requestID, int statusID) throws NamingException, SQLException {
+    public boolean updateStatusRequest(int requestID, int statusID) throws NamingException, SQLException {
         boolean flag = false;
         try {
             cn = DBHelper.makeConnection();
@@ -164,7 +164,7 @@ public class RequestsDAO {
                         + "where requestID = ?";
                 pstm = cn.prepareStatement(sql);
                 pstm.setInt(1, statusID);
-                pstm.setString(2, requestID);
+                pstm.setInt(2, requestID);
                 flag = pstm.executeUpdate() > 0 ? true : false;
             }
         } finally {
@@ -172,4 +172,100 @@ public class RequestsDAO {
         }
         return flag;
     }
+
+    public ArrayList<RequestDTO> getAllListRequestBooking(String email, Date dateSearch, String nameProduct, int indexPage) throws NamingException, SQLException {
+        ArrayList<RequestDTO> listRequestBooking = new ArrayList<>();
+        try {
+            String sqlCondition = "";
+            if (dateSearch != null) {
+                sqlCondition = "and req.dateBook = ? ";
+            }
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "select requestID, dateBook, req.statusReqID, u.email, r.productID from Requests req, Resources r, Users u, StatusRequest s \n"
+                        + "where req.email = u.email "
+                        + "and req.productID = r.productID "
+                        + "and req.statusReqID = s.statusReqID "
+                        + "and req.email = ? and r.productName like ? " + sqlCondition
+                        + "order by  req.dateBook desc  OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                pstm = cn.prepareStatement(sql);
+                if (dateSearch != null) {
+                    pstm.setString(1, email);
+                    pstm.setString(2, "%" + nameProduct + "%");
+                    pstm.setDate(3, dateSearch);
+                    pstm.setInt(4, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(5, MyConstants.QUANITY_ITEM_IN_PAGE);
+                } else {
+                    pstm.setString(1, email);
+                    pstm.setString(2, "%" + nameProduct + "%");
+                    pstm.setInt(3, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(4, MyConstants.QUANITY_ITEM_IN_PAGE);
+                }
+                rs = pstm.executeQuery();
+                while (rs.next()) {
+                    listRequestBooking.add(new RequestDTO(rs.getInt("requestID"), rs.getInt("statusReqID"), rs.getDate("dateBook"), rs.getString("email"), rs.getString("productID")));
+                }
+            }
+        } finally {
+            close();
+        }
+        return listRequestBooking;
+    }
+
+    public int getCountListBooking(String email, Date dateSearch, String nameProduct) throws NamingException, SQLException {
+        int count = 0;
+        try {
+            String sqlCondition = "";
+            if (dateSearch != null) {
+                sqlCondition = "and req.dateBook = ?";
+            }
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "select COUNT(*) from Requests req, Resources r, Users u, StatusRequest s \n"
+                        + " where req.email = u.email \n"
+                        + " and req.productID = r.productID \n"
+                        + " and req.statusReqID = s.statusReqID\n"
+                        + " and req.email = ? and r.productName like ? " + sqlCondition;
+                pstm = cn.prepareStatement(sql);
+                if (dateSearch != null) {
+                    pstm.setString(1, email);
+                    pstm.setString(2, "%" + nameProduct + "%");
+                    pstm.setDate(3, dateSearch);
+                } else {
+                    pstm.setString(1, email);
+                    pstm.setString(2, "%" + nameProduct + "%");
+                }
+                rs = pstm.executeQuery();
+                if (rs.next()) {
+                    count = rs.getInt(1);
+                }
+            }
+        } finally {
+            close();
+        }
+        return count;
+    }
+
+    public RequestDTO getDetailRequest(int requestID) throws SQLException, NamingException {
+        RequestDTO request = null;
+        try {
+            cn = DBHelper.makeConnection();
+            if (cn != null) {
+                String sql = "select requestID, dateBook, statusReqID, email, productID "
+                        + "from Requests where requestID = ? ";
+                pstm = cn.prepareStatement(sql);
+                pstm.setInt(1, requestID);
+                rs = pstm.executeQuery();
+                if (rs.next()) {
+                    request = new RequestDTO(rs.getInt("requestID"), rs.getInt("statusReqID"), rs.getDate("dateBook"), rs.getString("email"), rs.getString("productID"));
+                }
+            }
+        } finally {
+            close();
+        }
+        return request;
+    }
 }
+
+//select requestID, dateBook, statusReqID, email, productID
+//                    from Requests where requestID = 14

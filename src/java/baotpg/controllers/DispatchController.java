@@ -43,6 +43,11 @@ public class DispatchController extends HttpServlet {
     private String DENY_ACTION = "Delete";
     private String ACCEPT_ACTION = "Accept";
     private String CONFIRM_REQUEST_SERVLET = "ConfirmRequestsServlet";
+    private String VIEW_LIST_BOOKING_ACTION = "View List Booking";
+    private String LOAD_LIST_BOOKING_SERVLET = "LoadListBookingServlet";
+    private String SEARCH_LIST_BOOKING = "Search Booking";
+    private String DELETE_REQUEST_FROM_USER = "Delete Request";
+    private String DELETE_REQUEST_SERVLET = "DeleteRequestFromUser";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -84,8 +89,14 @@ public class DispatchController extends HttpServlet {
                 url = SEARCH_SERVLET_REQUEST;
             } else if (DENY_ACTION.equals(btnAction)) {
                 url = CONFIRM_REQUEST_SERVLET;
-            }else if (ACCEPT_ACTION.equals(btnAction)) {
+            } else if (ACCEPT_ACTION.equals(btnAction)) {
                 url = CONFIRM_REQUEST_SERVLET;
+            } else if (VIEW_LIST_BOOKING_ACTION.equals(btnAction)) {
+                url = LOAD_LIST_BOOKING_SERVLET;
+            } else if (SEARCH_LIST_BOOKING.equals(btnAction)) {
+                url = LOAD_LIST_BOOKING_SERVLET;
+            } else if (DELETE_REQUEST_FROM_USER.equals(btnAction)) {
+                url = DELETE_REQUEST_SERVLET;
             }
         } catch (Exception e) {
 

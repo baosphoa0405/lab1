@@ -5,9 +5,9 @@
  */
 package baotpg.controllers;
 
+import baotpg.requests.RequestDTO;
 import baotpg.requests.RequestsDAO;
-import baotpg.resources.ResourceDTO;
-import baotpg.resources.ResourcesDAO;
+import baotpg.users.UserDTO;
 import baotpg.utils.MyConstants;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,13 +20,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "ConfirmRequestsServlet", urlPatterns = {"/ConfirmRequestsServlet"})
-public class ConfirmRequestsServlet extends HttpServlet {
+@WebServlet(name = "DeleteRequestFromUser", urlPatterns = {"/DeleteRequestFromUser"})
+public class DeleteRequestFromUser extends HttpServlet {
+
+    private String SUCCESS = "LoadListBookingServlet";
+    private String ERROR = "Login.jsp";
+    private String ERROR_UPDATE = "LoadListBookingServlet";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,38 +44,39 @@ public class ConfirmRequestsServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String url = SUCCESS;
         try {
             response.setContentType("text/html;charset=UTF-8");
+            HttpSession session = request.getSession();
+            UserDTO user = (UserDTO) session.getAttribute("user");
+            String emailUserLoginGG = (String) session.getAttribute("loginGG");
             String requestID = request.getParameter("requestID");
-            String isConfirm = request.getParameter("flag");
-            String productID = request.getParameter("productID");
             RequestsDAO requestDAO = new RequestsDAO();
-            ResourcesDAO resourceDAO = new ResourcesDAO();
-            ResourceDTO resource = resourceDAO.getDetailResource(productID);
-            if (Boolean.parseBoolean(isConfirm)) {
-                System.out.println("accept");
-                // giam so luong resource, change status thanh Active
-                boolean isStatusActive = requestDAO.updateStatusRequest(Integer.parseInt(requestID), MyConstants.STATUS_REQUEST_ACTIVE);
-                boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() - 1);
-                if (updateQuanity && isStatusActive) {
-                    request.setAttribute("successConfirm", "Confirm successfully");
-                }
+            if (user == null && emailUserLoginGG == null) {
+                url = ERROR;
             } else {
-                System.out.println("deny");
-                // change status thanh Delete
-                boolean isStatusDelete = requestDAO.updateStatusRequest(Integer.parseInt(requestID), MyConstants.STATUS_REQUEST_DELETE);
-                if (isStatusDelete) {
-                    request.setAttribute("deleteConfirm", "Deny successfully");
+                // kiem tra xm request ID co1 trong ban3 request ko neu61 co1 thi2 cho user setStaus con2 neu61
+                // ko co1 thi2 phai3 show err
+                RequestDTO requestDetail = requestDAO.getDetailRequest(Integer.parseInt(requestID));
+                if (requestDetail.getStatusReqID() == MyConstants.STATUS_REQUEST_NEW) {
+                    boolean updateStatus = requestDAO.updateStatusRequest(requestDetail.getRequestID(), MyConstants.STATUS_REQUEST_IN_ACTIVE);
+                    if (updateStatus) {
+                        request.setAttribute("successDelete", "request of user deleted successfully");
+                    }
+                } else {
+                    url = ERROR_UPDATE;
+                    request.setAttribute("errorDelete", "please load list request");
                 }
             }
-        } catch (NamingException ex) {
-            Logger.getLogger(ConfirmRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("dasdas" + url);
         } catch (SQLException ex) {
-            Logger.getLogger(ConfirmRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }finally{
-            request.getRequestDispatcher("LoadRequestServlet").forward(request, response);
+            Logger.getLogger(DeleteRequestFromUser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(DeleteRequestFromUser.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
         }
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
