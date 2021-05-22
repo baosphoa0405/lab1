@@ -11,6 +11,7 @@ import baotpg.resources.ResourceDTO;
 import baotpg.resources.ResourcesDAO;
 import baotpg.statusRequest.StatusRequestDTO;
 import baotpg.statusRequest.StatusRequestsDAO;
+import baotpg.utils.MyConstants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,29 +44,46 @@ public class LoadRequestServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             response.setContentType("text/html;charset=UTF-8");
-            String keySearch = request.getParameter("key");
+            String keySearch = request.getParameter("key"); // vua2 search name product , email
             String indexPage = request.getParameter("index");
-            RequestsDAO requestDaos = new RequestsDAO();
-            int countsListRequest = requestDaos.getCountRequests(keySearch);
-            int countItemPageSize = 20;
-            int countPageSize = countsListRequest / countItemPageSize;
-            if (countsListRequest % countItemPageSize != 0) {
-                countPageSize += 1;
+            String statusRequest = request.getParameter("StatusRequest");
+
+            if (keySearch == null) {
+                keySearch = "";
             }
+            if (statusRequest == null) {
+                statusRequest = "";
+            }
+
+            RequestsDAO requestDaos = new RequestsDAO();
             StatusRequestsDAO statusRequestDAO = new StatusRequestsDAO();
             ResourcesDAO reourceDAO = new ResourcesDAO();
+
+            int countsListRequest = requestDaos.getCountRequests(keySearch, statusRequest);
+            int countPageSize = countsListRequest / MyConstants.QUANITY_ITEM_IN_PAGE;
+            if (countsListRequest % MyConstants.QUANITY_ITEM_IN_PAGE != 0) {
+                countPageSize += 1;
+            }
+
             ArrayList<ResourceDTO> listResources = reourceDAO.getAllListReources();
             ArrayList<StatusRequestDTO> listStatusRequest = statusRequestDAO.getAllListStatusRequest();
             ArrayList<RequestDTO> arrayListRequest = new ArrayList<>();
             if (indexPage == null) {
-                arrayListRequest = requestDaos.getAllRequest(1, keySearch);
+                arrayListRequest = requestDaos.getAllRequest(1, keySearch, statusRequest);
                 request.setAttribute("index", 1);
             } else {
-                arrayListRequest = requestDaos.getAllRequest(Integer.parseInt(indexPage), keySearch);
+                arrayListRequest = requestDaos.getAllRequest(Integer.parseInt(indexPage), keySearch, statusRequest);
                 request.setAttribute("index", indexPage);
             }
+
+            for (int i = 0; i < listStatusRequest.size(); i++) {
+                if (listStatusRequest.get(i).getStatusReqName().equalsIgnoreCase("inactive")) {
+                    listStatusRequest.remove(i);
+                }
+            }
             request.setAttribute("arrayListRequest", arrayListRequest);
-            request.setAttribute("countListRequest", countPageSize);
+            request.setAttribute("countPageSize", countPageSize);
+            request.setAttribute("StatusRequest", statusRequest);
             request.setAttribute("listStatusRequest", listStatusRequest);
             request.setAttribute("listResource", listResources);
             request.setAttribute("key", keySearch);

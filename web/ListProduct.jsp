@@ -57,7 +57,7 @@
                 <c:forEach var="item" items="${requestScope.listCategories}">
                     <option value="${item.getCategoryID()}" ${requestScope.categorySelect eq item.getCategoryID() ? "selected" : ""}>${item.getCategoryName()}</option>
                 </c:forEach>
-                <option var="default">DEFAULT</option>
+                <option var="default">ALL</option>
             </select>
             Search <input type="text" name="nameSearch" value="${requestScope.nameSearch}" />
             <label for="date">date</label>
@@ -86,7 +86,7 @@
                 <!--ko seach gì hết-->
                 <c:if test="${not empty requestScope.listReourcesPagnination}">
                     <c:forEach var="item" items="${requestScope.listReourcesPagnination}">
-                        <tr style="color: ${requestScope.idProductOutOfNumber eq item.getProductID() ? "red" : "black"}">
+                        <tr style="color: ${requestScope.idProductOutOfNumber eq item.getProductID() || item.getQuanlity() eq 0  ? "red" : "black"}">
                             <td>${item.getProductID()}</td>
                             <td>${item.getProductName()}</td>
                             <td>${item.getColor()}</td>

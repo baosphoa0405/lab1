@@ -61,16 +61,27 @@
         </nav>
         <label for="requests">Choose a Type Request</label>
         <form method="POST" action="DispatchController">
+            <select name="StatusRequest">
+                <c:forEach var="i" items="${requestScope.listStatusRequest}">
+                    <option value="${i.statusReqName}" ${requestScope.statusRequest eq i.statusReqName ? "selected" : ""}>
+                        ${i.statusReqName}
+                    </option>
+                </c:forEach>
+            </select>
             Search key<input type="text" placeholder="search content" name="key" value="${requestScope.key}" />
             <input type="submit" name="btnAction" value="Search Request" />
         </form>
+        <h1 style="color: green">${requestScope.successConfirm}</h1>
+        <h1 style="color: green">${requestScope.deleteConfirm}</h1>
         <table border="1">
             <thead>
                 <tr>
                     <th>DateBook</th>
                     <th>email</th>
-                    <th>productID</th>
+                    <th>productName</th>
                     <th>status</th>
+                    <th>Accept</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,27 +99,40 @@
                                 <td>${i.statusReqName}</td>
                             </c:if>
                         </c:forEach>
-                    </tr>    
-                </c:forEach>
-            </tbody>
-        </table>
-        <c:if test="${not empty requestScope.countListRequest}">
-            <div class="pagination">
-                <c:forEach  begin="1" end="${requestScope.countListRequest}" var="i">
-                    <c:if test="${empty requestScope.key}">
-                        <a id="${i}" href="LoadRequestServlet?index=${i}">${i}</a>
-                    </c:if>
-                    <c:if test="${not empty requestScope.key}">
-                        <a id="${i}" href="LoadRequestServlet?index=${i}&key=${requestScope.key}">${i}</a>
-                    </c:if>
-                </c:forEach>
-            </div>
-        </c:if>
-        <script>
-            document.getElementById('${index}').style.color = "red";
-        </script>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    </body>
+                <form method="Post" action="DispatchController" >
+                    <td>
+                        <input type="hidden" name="productID" value="${item.productID}" />
+                        <input type="hidden" name="flag" value="true" />
+                        <input type="hidden" name="requestID" value="${item.requestID}" />
+                        <c:if test="${item.statusReqID ne 4}">
+                            <input type="submit" value="Accept" name="btnAction" />
+                        </c:if>
+                    </td>
+                </form>
+                <form method="Post" action="DispatchController" >
+                    <td>
+                        <input type="hidden" name="productID" value="${item.productID}" />
+                        <input type="hidden" name="flag" value="false" />
+                        <input type="hidden" name="requestID" value="${item.requestID}" />
+                        <c:if test="${item.statusReqID ne 4}">
+                            <input type="submit" value="Delete" name="btnAction" />
+                        </c:if>
+                    </td>
+                </form>
+            </tr>    
+        </c:forEach>
+    </tbody>
+</table>
+<div class="pagination">
+    <c:forEach  begin="1" end="${requestScope.countPageSize}" var="i">
+        <a id="${i}" href="LoadRequestServlet?index=${i}&key=${requestScope.key}&StatusRequest=${requestScope.StatusRequest}">${i}</a>
+    </c:forEach>
+</div>
+<script>
+    document.getElementById('${index}').style.color = "red";
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
 </html>

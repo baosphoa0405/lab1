@@ -5,14 +5,12 @@
  */
 package baotpg.controllers;
 
-import baotpg.requests.RequestDTO;
 import baotpg.requests.RequestsDAO;
 import baotpg.resources.ResourceDTO;
 import baotpg.resources.ResourcesDAO;
-import baotpg.users.UserDTO;
+import baotpg.utils.MyConstants;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,14 +20,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author Admin
  */
-@WebServlet(name = "BookingServlet", urlPatterns = {"/BookingServlet"})
-public class BookingServlet extends HttpServlet {
+@WebServlet(name = "ConfirmRequestsServlet", urlPatterns = {"/ConfirmRequestsServlet"})
+public class ConfirmRequestsServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,40 +41,36 @@ public class BookingServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             response.setContentType("text/html;charset=UTF-8");
+            String requestID = request.getParameter("requestID");
+            String isConfirm = request.getParameter("flag");
             String productID = request.getParameter("productID");
             RequestsDAO requestDAO = new RequestsDAO();
             ResourcesDAO resourceDAO = new ResourcesDAO();
-            HttpSession sesion = request.getSession();
-            UserDTO user = (UserDTO) sesion.getAttribute("user");
-            String emailLoginGG = (String) sesion.getAttribute("loginGG");
-            RequestDTO requestBooking = null;
-            ResourceDTO resource = resourceDAO.getDetailResource(productID); 
-            if (resource.getQuanlity() >= 1) {
-                if (user != null) {
-                    requestBooking = new RequestDTO(0, 1, Date.valueOf(java.time.LocalDate.now()), user.getEmail(), productID);
-                }
-                if (emailLoginGG != null) {
-                    requestBooking = new RequestDTO(0, 1, Date.valueOf(java.time.LocalDate.now()), emailLoginGG, productID);
-                }
-                boolean isBooking = requestDAO.bookingResource(requestBooking);
-                if (isBooking) {
-                    request.setAttribute("bookingSuccess", "Booking SUCCESS");
-                } else {
-                    request.setAttribute("bookingFail", "Booking FAIL");
+            ResourceDTO resource = resourceDAO.getDetailResource(productID);
+            if (Boolean.parseBoolean(isConfirm)) {
+                System.out.println("accept");
+                // giam so luong resource, change status thanh Active
+                boolean isStatusActive = requestDAO.updateStatusRequest(requestID, MyConstants.STATUS_REQUEST_ACTIVE);
+                boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() - 1);
+                if (updateQuanity && isStatusActive) {
+                    request.setAttribute("successConfirm", "Confirm successfully");
                 }
             } else {
-                request.setAttribute("errBooking", "Please booking another resource");
-                request.setAttribute("idProductOutOfNumber", resource.getProductID());
+                System.out.println("deny");
+                // change status thanh Delete
+                boolean isStatusDelete = requestDAO.updateStatusRequest(requestID, MyConstants.STATUS_REQUEST_DELETE);
+                if (isStatusDelete) {
+                    request.setAttribute("deleteConfirm", "Deny successfully");
+                }
             }
-
         } catch (NamingException ex) {
-            Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConfirmRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            request.getRequestDispatcher("SearchServlet").forward(request, response);
+            Logger.getLogger(ConfirmRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            request.getRequestDispatcher("LoadRequestServlet").forward(request, response);
         }
-
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

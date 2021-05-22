@@ -40,6 +40,10 @@ public class DispatchController extends HttpServlet {
     private String LOAD_REQUEST_SERVLET = "LoadRequestServlet";
     private String SEARCH_REQUEST_ACTION = "Search Request";
     private String SEARCH_SERVLET_REQUEST = "LoadRequestServlet";
+    private String DENY_ACTION = "Delete";
+    private String ACCEPT_ACTION = "Accept";
+    private String CONFIRM_REQUEST_SERVLET = "ConfirmRequestsServlet";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -58,36 +62,30 @@ public class DispatchController extends HttpServlet {
         try {
             if (btnAction == null) {
                 url = LOGIN_JSP;
-            }
-            if (LOGIN_ACTION.equals(btnAction)) {
+            } else if (LOGIN_ACTION.equals(btnAction)) {
                 url = LOGIN_SERVLET;
-            }
-            if (LOGOUT_ACTION.equals(btnAction)) {
+            } else if (LOGOUT_ACTION.equals(btnAction)) {
                 url = LOGOUT_SERVLET;
-            }
-            if (REGISTER_ACTION.equals(btnAction)) {
+            } else if (REGISTER_ACTION.equals(btnAction)) {
                 url = REGISTER_SERVLET;
-            }
-            if (VERIFY_ACTION.equals(btnAction)) {
+            } else if (VERIFY_ACTION.equals(btnAction)) {
                 url = VERIFY_SERVLET;
-            }
-            if (SELECT_ACTION.equals(btnAction)) {
+            } else if (SELECT_ACTION.equals(btnAction)) {
                 url = SEARCH_SERVLET;
-            }
-            if (SEARCH_NAME_ACTION.equals(btnAction)) {
+            } else if (SEARCH_NAME_ACTION.equals(btnAction)) {
                 url = SEARCH_SERVLET;
-            }
-            if (RESET_ACTION.equals(btnAction)) {
+            } else if (RESET_ACTION.equals(btnAction)) {
                 url = SEARCH_SERVLET;
-            }
-            if (BOOK_ACTION.equals(btnAction)) {
+            } else if (BOOK_ACTION.equals(btnAction)) {
                 url = BOOKING_SERVLET;
-            }
-            if (LOAD_REQUEST_ACTION.equals(btnAction)) {
+            } else if (LOAD_REQUEST_ACTION.equals(btnAction)) {
                 url = LOAD_REQUEST_SERVLET;
-            }
-            if (SEARCH_REQUEST_ACTION.equals(btnAction)) {
+            } else if (SEARCH_REQUEST_ACTION.equals(btnAction)) {
                 url = SEARCH_SERVLET_REQUEST;
+            } else if (DENY_ACTION.equals(btnAction)) {
+                url = CONFIRM_REQUEST_SERVLET;
+            }else if (ACCEPT_ACTION.equals(btnAction)) {
+                url = CONFIRM_REQUEST_SERVLET;
             }
         } catch (Exception e) {
 

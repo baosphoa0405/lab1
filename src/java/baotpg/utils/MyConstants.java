@@ -22,4 +22,10 @@ public class MyConstants {
     public static String GOOGLE_GRANT_TYPE = "authorization_code";
     
     public static int QUANITY_ITEM_IN_PAGE = 20;
+    
+    public static int STATUS_REQUEST_NEW = 1;
+    public static int STATUS_REQUEST_IN_ACTIVE = 2;
+    public static int STATUS_REQUEST_ACTIVE = 3;
+    public static int STATUS_REQUEST_DELETE = 4;
+    
 }
