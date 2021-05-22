@@ -13,6 +13,7 @@ import baotpg.statusRequest.StatusRequestDTO;
 import baotpg.statusRequest.StatusRequestsDAO;
 import baotpg.utils.MyConstants;
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -47,6 +48,11 @@ public class LoadRequestServlet extends HttpServlet {
             String keySearch = request.getParameter("key"); // vua2 search name product , email
             String indexPage = request.getParameter("index");
             String statusRequest = request.getParameter("StatusRequest");
+            String date = request.getParameter("date");
+            Date dateSearch = null;
+            if (date != null && !date.isEmpty()) {
+                dateSearch = Date.valueOf(date);
+            }
 
             if (keySearch == null) {
                 keySearch = "";
@@ -59,7 +65,7 @@ public class LoadRequestServlet extends HttpServlet {
             StatusRequestsDAO statusRequestDAO = new StatusRequestsDAO();
             ResourcesDAO reourceDAO = new ResourcesDAO();
 
-            int countsListRequest = requestDaos.getCountRequests(keySearch, statusRequest);
+            int countsListRequest = requestDaos.getCountRequests(keySearch, statusRequest, dateSearch);
             int countPageSize = countsListRequest / MyConstants.QUANITY_ITEM_IN_PAGE;
             if (countsListRequest % MyConstants.QUANITY_ITEM_IN_PAGE != 0) {
                 countPageSize += 1;
@@ -69,10 +75,10 @@ public class LoadRequestServlet extends HttpServlet {
             ArrayList<StatusRequestDTO> listStatusRequest = statusRequestDAO.getAllListStatusRequest();
             ArrayList<RequestDTO> arrayListRequest = new ArrayList<>();
             if (indexPage == null) {
-                arrayListRequest = requestDaos.getAllRequest(1, keySearch, statusRequest);
+                arrayListRequest = requestDaos.getAllRequest(1, keySearch, statusRequest, dateSearch);
                 request.setAttribute("index", 1);
             } else {
-                arrayListRequest = requestDaos.getAllRequest(Integer.parseInt(indexPage), keySearch, statusRequest);
+                arrayListRequest = requestDaos.getAllRequest(Integer.parseInt(indexPage), keySearch, statusRequest, dateSearch);
                 request.setAttribute("index", indexPage);
             }
 
@@ -87,6 +93,7 @@ public class LoadRequestServlet extends HttpServlet {
             request.setAttribute("listStatusRequest", listStatusRequest);
             request.setAttribute("listResource", listResources);
             request.setAttribute("key", keySearch);
+            request.setAttribute("date", date);
         } catch (SQLException ex) {
             Logger.getLogger(LoadRequestServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NamingException ex) {

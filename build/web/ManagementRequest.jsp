@@ -63,11 +63,12 @@
         <form method="POST" action="DispatchController">
             <select name="StatusRequest">
                 <c:forEach var="i" items="${requestScope.listStatusRequest}">
-                    <option value="${i.statusReqName}" ${requestScope.statusRequest eq i.statusReqName ? "selected" : ""}>
+                    <option value="${i.statusReqName}" ${requestScope.StatusRequest eq i.statusReqName ? "selected" : ""}>
                         ${i.statusReqName}
                     </option>
                 </c:forEach>
             </select>
+            Search Date Request <input type="date" name="date" value="${requestScope.date}" />
             Search key<input type="text" placeholder="search content" name="key" value="${requestScope.key}" />
             <input type="submit" name="btnAction" value="Search Request" />
         </form>
@@ -121,11 +122,14 @@
                 </form>
             </tr>    
         </c:forEach>
+            <c:if test="${empty requestScope.arrayListRequest}">
+                <h1>List Request Empty</h1>
+        </c:if>
     </tbody>
 </table>
 <div class="pagination">
     <c:forEach  begin="1" end="${requestScope.countPageSize}" var="i">
-        <a id="${i}" href="LoadRequestServlet?index=${i}&key=${requestScope.key}&StatusRequest=${requestScope.StatusRequest}">${i}</a>
+        <a id="${i}" href="DispatchController?btnAction=Search Request&index=${i}&key=${requestScope.key}&StatusRequest=${requestScope.StatusRequest}">${i}</a>
     </c:forEach>
 </div>
 <script>

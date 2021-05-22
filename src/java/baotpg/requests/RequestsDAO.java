@@ -8,6 +8,7 @@ package baotpg.requests;
 import baotpg.utils.DBHelper;
 import baotpg.utils.MyConstants;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,15 +56,21 @@ public class RequestsDAO {
         return isBook;
     }
 
-    public ArrayList<RequestDTO> getAllRequest(int indexPage, String key, String statusReqName) throws NamingException, SQLException {
+    public ArrayList<RequestDTO> getAllRequest(int indexPage, String key, String statusReqName, Date dateSearch) throws NamingException, SQLException {
         ArrayList<RequestDTO> list = new ArrayList<>();
         try {
             cn = DBHelper.makeConnection();
 
             if (cn != null) {
                 String sqlCondition = "";
-                if (!statusReqName.isEmpty()) {
+                if (!statusReqName.isEmpty() && dateSearch == null) {
                     sqlCondition = "and s.statusReqName = ? ";
+                }
+                if (dateSearch != null && statusReqName.isEmpty()) {
+                    sqlCondition = "and req.dateBook = ? ";
+                }
+                if (dateSearch != null && !statusReqName.isEmpty()) {
+                    sqlCondition = "and s.statusReqName = ? and req.dateBook = ? ";
                 }
                 String sql = "select requestID, dateBook, req.statusReqID, u.email, r.productID from Requests req, Resources r, Users u, StatusRequest s "
                         + "where req.email = u.email "
@@ -72,15 +79,24 @@ public class RequestsDAO {
                         + "and (r.productName like ? or u.email like ? ) " + sqlCondition
                         + "order by  req.requestID desc  OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
                 pstm = cn.prepareStatement(sql);
-                if (!statusReqName.isEmpty()) {
-                    pstm.setString(1, '%' + key + '%');
-                    pstm.setString(2, '%' + key + '%');
+                pstm.setString(1, '%' + key + '%');
+                pstm.setString(2, '%' + key + '%');
+                if (!statusReqName.isEmpty() && dateSearch == null) {
                     pstm.setString(3, statusReqName);
                     pstm.setInt(4, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
                     pstm.setInt(5, MyConstants.QUANITY_ITEM_IN_PAGE);
-                } else {
-                    pstm.setString(1, '%' + key + '%');
-                    pstm.setString(2, '%' + key + '%');
+                }
+                if (dateSearch != null && statusReqName.isEmpty()) {
+                    pstm.setDate(3, dateSearch);
+                    pstm.setInt(4, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(5, MyConstants.QUANITY_ITEM_IN_PAGE);
+                }
+                if (dateSearch != null && !statusReqName.isEmpty()) {
+                    pstm.setString(3, statusReqName);
+                    pstm.setDate(4, dateSearch);
+                    pstm.setInt(5, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
+                    pstm.setInt(6, MyConstants.QUANITY_ITEM_IN_PAGE);
+                } else if(dateSearch == null && statusReqName.isEmpty()) {
                     pstm.setInt(3, (indexPage - 1) * MyConstants.QUANITY_ITEM_IN_PAGE);
                     pstm.setInt(4, MyConstants.QUANITY_ITEM_IN_PAGE);
                 }
@@ -95,30 +111,38 @@ public class RequestsDAO {
         return list;
     }
 
-    public int getCountRequests(String key, String statusReqName) throws SQLException, NamingException {
+    public int getCountRequests(String key, String statusReqName, Date dateSearch) throws SQLException, NamingException {
         int count = 0;
         try {
             cn = DBHelper.makeConnection();
             if (cn != null) {
                 String condition = "";
-                if (!statusReqName.isEmpty()) {
+                if (!statusReqName.isEmpty() && dateSearch == null) {
                     condition = "and s.statusReqName = ? ";
                 }
-//                String sql = "select  COUNT(*) from Requests req, Resources r, Users u, StatusRequest s where req.email = u.email and req.productID = r.productID\n"
-//                        + "and req.statusReqID = s.statusReqID and (r.productName like ? or u.email like ? " + (condition.length() == 0 ? ")" : condition);
+                if (dateSearch != null && statusReqName.isEmpty()) {
+                    condition = "and req.dateBook = ? ";
+                }
+                if (dateSearch != null && !statusReqName.isEmpty()) {
+                    condition = "and s.statusReqName = ? and  req.dateBook = ? ";
+                }
                 String sql = "select  COUNT(*) from Requests req, Resources r, Users u, StatusRequest s "
                         + "where req.email = u.email "
                         + "and req.productID = r.productID\n"
                         + "and req.statusReqID = s.statusReqID "
-                        + "and (r.productName like ? or u.email like ? ) " + condition ;
+                        + "and (r.productName like ? or u.email like ? ) " + condition;
                 pstm = cn.prepareStatement(sql);
-                if (!statusReqName.isEmpty()) {
-                    pstm.setString(1, '%' + key + '%');
-                    pstm.setString(2, '%' + key + '%');
+                pstm.setString(1, '%' + key + '%');
+                pstm.setString(2, '%' + key + '%');
+                if (!statusReqName.isEmpty() && dateSearch == null) {
                     pstm.setString(3, statusReqName);
-                } else {
-                    pstm.setString(1, '%' + key + '%');
-                    pstm.setString(2, '%' + key + '%');
+                }
+                if (dateSearch != null && statusReqName.isEmpty()) {
+                    pstm.setDate(3, dateSearch);
+                }
+                if (dateSearch != null && !statusReqName.isEmpty()) {
+                    pstm.setString(3, statusReqName);
+                    pstm.setDate(4, dateSearch);
                 }
                 rs = pstm.executeQuery();
                 if (rs.next()) {

@@ -66,9 +66,6 @@
                    min="" max="">
             <input type="submit" name="btnAction" value="search" />
         </form>
-        <form action="DispatchController" method="POST">
-            <input type="submit" value="Reset" name="btnAction" />    
-        </form>
         <h1 style="color: red">${requestScope.errBooking}</h1>
         <table border="1">
             <thead>
@@ -114,7 +111,7 @@
     </table>
     <div class="pagination">
         <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
-            <a id="${i}" href="SearchServlet?index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}&date=${requestScope.date}">${i}</a>
+            <a id="${i}" href="DispatchController?btnAction=search&index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}&date=${requestScope.date}">${i}</a>
         </c:forEach>
     </div>
     <script>
