@@ -99,7 +99,12 @@ public class SearchServlet extends HttpServlet {
                 }
                 request.setAttribute("date", dateSearch);
                 request.setAttribute("pageSize", pageSize);
-                request.setAttribute("categorySelect", categorySelect);
+                
+                if (categorySelect.isEmpty()) {
+                    request.setAttribute("categorySelect", "default");
+                }else{
+                    request.setAttribute("categorySelect", categorySelect);
+                }
                 request.setAttribute("category", categorySelect);
                 request.setAttribute("nameSearch", nameSearch);
                 request.setAttribute("listCategories", categoriesDAO.getAllListCategories());

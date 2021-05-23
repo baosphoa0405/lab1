@@ -82,11 +82,11 @@ public class LoadRequestServlet extends HttpServlet {
                 request.setAttribute("index", indexPage);
             }
 
-            for (int i = 0; i < listStatusRequest.size(); i++) {
-                if (listStatusRequest.get(i).getStatusReqName().equalsIgnoreCase("inactive")) {
-                    listStatusRequest.remove(i);
-                }
-            }
+//            for (int i = 0; i < listStatusRequest.size(); i++) {
+//                if (listStatusRequest.get(i).getStatusReqName().equalsIgnoreCase("inactive")) {
+//                    listStatusRequest.remove(i);
+//                }
+//            }
             request.setAttribute("arrayListRequest", arrayListRequest);
             request.setAttribute("countPageSize", countPageSize);
             request.setAttribute("StatusRequest", statusRequest);

@@ -45,7 +45,7 @@
         </div>
         <h1 style="color: green">${requestScope.successDelete}</h1>
         <h1 style="color: green">${requestScope.errorDelete}</h1>
-        <table border="1">
+        <table style="border: none; text-align: center">
             <thead>
                 <tr>
                     <th>RequestID</th>
@@ -54,6 +54,7 @@
                     <th>productName</th>
                     <th>status</th>
                     <th>Waiting</th>
+                    <th>Request Successfully</th>
                     <th>Delete</th>
                 </tr>
             </thead>
@@ -77,18 +78,31 @@
                             <td>
                                 Waiting admin accept
                             </td>
+                            <td>None</td>
                             <td>
                                 <form action="DispatchController" method="Post">
                                     <input type="hidden" name="requestID" value="${item.requestID}" />
                                     <input type="submit" value="Delete Request" name="btnAction"/>
                                 </form>
                             </td>
+                           
                         </c:if>
                         <c:if test="${item.statusReqID ne 1}">
+                            <td>None</td>
                             <td style="text-align: center">
                                 successFully
                             </td>
-                            <td></td>
+                            <td>
+                                <form action="DispatchController" method="Post">
+                                    <input type="hidden" name="requestID" value="${item.requestID}" />
+                                    <input type="submit" value="Delete Request" name="btnAction" ${item.statusReqID ne 1 ? "disabled":""}/>
+                                </form>
+                            </td>
+                             <c:if test="${requestScope.requestID eq item.requestID}">
+                                <c:if test="${not empty requestScope.successDelete}">
+                                    <td style="color: green">${requestScope.successDelete}</td>    
+                                </c:if>
+                            </c:if>
                         </c:if>
                     </tr>
                 </c:forEach>

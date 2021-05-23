@@ -55,13 +55,12 @@ public class DeleteRequestFromUser extends HttpServlet {
             if (user == null && emailUserLoginGG == null) {
                 url = ERROR;
             } else {
-                // kiem tra xm request ID co1 trong ban3 request ko neu61 co1 thi2 cho user setStaus con2 neu61
-                // ko co1 thi2 phai3 show err
                 RequestDTO requestDetail = requestDAO.getDetailRequest(Integer.parseInt(requestID));
                 if (requestDetail.getStatusReqID() == MyConstants.STATUS_REQUEST_NEW) {
                     boolean updateStatus = requestDAO.updateStatusRequest(requestDetail.getRequestID(), MyConstants.STATUS_REQUEST_IN_ACTIVE);
                     if (updateStatus) {
-                        request.setAttribute("successDelete", "request of user deleted successfully");
+                        request.setAttribute("requestID", requestID);
+                        request.setAttribute("successDelete", "request of user deleted successfully " + requestID);
                     }
                 } else {
                     url = ERROR_UPDATE;

@@ -83,7 +83,7 @@ public class LoadListBookingServlet extends HttpServlet {
                         listResources = resourceDAO.getAllListReources();
                         listStatusRequest = statusRequestDAO.getAllListStatusRequest();
                         quanityPageSize = quanityListRequestBooking / MyConstants.QUANITY_ITEM_IN_PAGE;
-                        if (quanityPageSize % quanityListRequestBooking != 0) {
+                        if (quanityListRequestBooking % MyConstants.QUANITY_ITEM_IN_PAGE != 0) {
                             quanityPageSize += 1;
                         }
                         if (index == null) {
@@ -97,22 +97,23 @@ public class LoadListBookingServlet extends HttpServlet {
                 }
                 // cho email
                 if (emailUserLoginGG != null) {
-                    quanityListRequestBooking = requestDAO.getCountListBooking(user.getEmail(), dateSearch, nameProduct);
+                    quanityListRequestBooking = requestDAO.getCountListBooking(emailUserLoginGG, dateSearch, nameProduct);
                     if (quanityListRequestBooking > 0) {
                         listResources = resourceDAO.getAllListReources();
                         quanityPageSize = quanityListRequestBooking / MyConstants.QUANITY_ITEM_IN_PAGE;
-                        if (quanityPageSize % quanityListRequestBooking != 0) {
+                        if (quanityListRequestBooking % MyConstants.QUANITY_ITEM_IN_PAGE != 0) {
                             quanityPageSize += 1;
                         }
                         if (index == null) {
-                            listRequestBooking = requestDAO.getAllListRequestBooking(user.getEmail(), dateSearch, nameProduct, 1);
+                            listRequestBooking = requestDAO.getAllListRequestBooking(emailUserLoginGG, dateSearch, nameProduct, 1);
                         } else {
-                            listRequestBooking = requestDAO.getAllListRequestBooking(user.getEmail(), dateSearch, nameProduct, Integer.parseInt(index));
+                            listRequestBooking = requestDAO.getAllListRequestBooking(emailUserLoginGG, dateSearch, nameProduct, Integer.parseInt(index));
                         }
                     } else {
                         request.setAttribute("emptyListRequestBooking", "Empty List Request Booking");
                     }
                 }
+                System.out.println("dasdasd " + quanityPageSize);
                 request.setAttribute("listStatusRequest", listStatusRequest);
                 request.setAttribute("listResouces", listResources);
                 request.setAttribute("quanityPageSize", quanityPageSize);

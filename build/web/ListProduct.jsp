@@ -56,14 +56,14 @@
             <input type="submit" value="View List Booking" name="btnAction" />
         </form>
         <h1 style="color: green">${requestScope.bookingSuccess}</h1>
-        <h1 style="color: fail">${requestScope.bookingFail}</h1>
+        <h1 style="color: red">${requestScope.bookingFail}</h1>
         <label for="categories">Choose a categories</label>
         <form action="DispatchController" method="POST">
             <select id="categories" name="category">
                 <c:forEach var="item" items="${requestScope.listCategories}">
                     <option value="${item.getCategoryID()}" ${requestScope.categorySelect eq item.getCategoryID() ? "selected" : ""}>${item.getCategoryName()}</option>
                 </c:forEach>
-                <option var="default">ALL</option>
+                <option value="default" ${requestScope.categorySelect eq 'default' ? "selected" : ""}>ALL</option>
             </select>
             Search <input type="text" name="nameSearch" value="${requestScope.nameSearch}" />
             <label for="date">date</label>
@@ -73,7 +73,7 @@
             <input type="submit" name="btnAction" value="search" />
         </form>
         <h1 style="color: red">${requestScope.errBooking}</h1>
-        <table border="1">
+        <table style="border: none; text-align: center">
             <thead>
                 <tr>
                     <th>ProductID</th>
@@ -102,9 +102,23 @@
                             <td>
                                 <form method="POST" action="DispatchController">
                                     <input type="hidden" name="productID" value="${item.getProductID()}" />
-                                    <input type="submit" name="btnAction" value="Booking" />
+                                    <input type="submit" name="btnAction" value="Booking" ${item.getQuanlity() eq 0 ? "disabled": ""}/>
                                 </form>
                             </td>
+                            <c:if test="${requestScope.productID eq item.productID}">
+                                <c:if test="${not empty requestScope.bookingSuccess}">
+                                    <td style="color: green">
+                                        ${requestScope.bookingSuccess}
+                                    </td>
+                                </c:if>     
+                            </c:if>
+                            <c:if test="${requestScope.productID eq item.productID}">
+                                <c:if test="${not empty requestScope.errBooking}">
+                                    <td style="color: red">
+                                        ${requestScope.errBooking}
+                                    </td>
+                                </c:if>      
+                            </c:if>
                         </tr>
                     </c:forEach>
                 </c:if>
@@ -114,6 +128,7 @@
             </c:if>
         </tbody>
     </table>
+
     <div class="pagination">
         <c:forEach  begin="1" end="${requestScope.pageSize}" var="i">
             <a id="${i}" href="DispatchController?btnAction=search&index=${i}&nameSearch=${requestScope.nameSearch}&category=${requestScope.category}&date=${requestScope.date}">${i}</a>

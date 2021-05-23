@@ -70,14 +70,15 @@ public class BookingServlet extends HttpServlet {
                     }
                     boolean isBooking = requestDAO.bookingResource(requestBooking);
                     if (isBooking) {
-                        request.setAttribute("bookingSuccess", "Booking SUCCESS");
+                        request.setAttribute("bookingSuccess", "Booking SUCCESS " + productID);
                     } else {
-                        request.setAttribute("bookingFail", "Booking FAIL");
+                        request.setAttribute("bookingFail", "Booking FAIL " + productID);
                     }
                 } else {
-                    request.setAttribute("errBooking", "Please booking another resource");
+                    request.setAttribute("errBooking", "Please booking another resource " + productID);
                     request.setAttribute("idProductOutOfNumber", resource.getProductID());
                 }
+                request.setAttribute("productID", productID);
             }
         } catch (NamingException ex) {
             Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
