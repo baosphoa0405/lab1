@@ -45,6 +45,7 @@ public class VerifyCodeServlet extends HttpServlet {
             UsersDAO usersDAO = new UsersDAO();
             String codeSession = (String) session.getAttribute("codeRandom");
             String email = request.getParameter("email").trim();
+            System.out.println("email dad" + email);
             if (code.equals(codeSession)) {
                 boolean isActive = usersDAO.updateUser(email);
                 System.out.println("isActive " + isActive);

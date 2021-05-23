@@ -62,7 +62,7 @@ public class RegisterServlet extends HttpServlet {
             }
             if (usersDAO.checkDuplicateEmail(email)) {
                 checkError = true;
-                userErrors.setEmailDuplicate("Email duplicate");
+                userErrors.setEmailDuplicate("Email was created acccount please choosen another email");
             }
             if (phone.isEmpty()) {
                 checkError = true;

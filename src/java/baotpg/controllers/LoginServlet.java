@@ -8,6 +8,7 @@ package baotpg.controllers;
 import baotpg.utils.VerifyUtils;
 import baotpg.users.UserDTO;
 import baotpg.users.UsersDAO;
+import baotpg.utils.MyConstants;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -31,7 +32,6 @@ public class LoginServlet extends HttpServlet {
     private String URL_USER = "SearchServlet";
     private String FAIL = "Login.jsp";
     private String URL_ADMIN = "LoadRequestServlet";
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -73,13 +73,17 @@ public class LoginServlet extends HttpServlet {
 //            }
             if (!valid) {
                 if (user != null) {
-                    if (user.getRoleID() == 1) {
-                        url = URL_USER;
-                        session.setAttribute("user", user);
+                    if (user.getStatusID() == MyConstants.STATUS_ACCOUNT_NEW) {
+                        request.setAttribute("unConfirmedEmail", "Please confirm email before login");
                     } else {
-                        url = URL_ADMIN;
-                        session.setAttribute("admin", user);                    }
-
+                        if (user.getRoleID() == MyConstants.ROLE_ACCOUNT_USER) {
+                            url = URL_USER;
+                            session.setAttribute("user", user);
+                        } else {
+                            url = URL_ADMIN;
+                            session.setAttribute("admin", user);
+                        }
+                    }
                 } else {
                     request.setAttribute("error", "user or password wrong");
                 }
@@ -91,7 +95,6 @@ public class LoginServlet extends HttpServlet {
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

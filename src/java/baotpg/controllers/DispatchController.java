@@ -48,7 +48,8 @@ public class DispatchController extends HttpServlet {
     private String SEARCH_LIST_BOOKING = "Search Booking";
     private String DELETE_REQUEST_FROM_USER = "Delete Request";
     private String DELETE_REQUEST_SERVLET = "DeleteRequestFromUser";
-
+    private String VERIFY_EMAIL_ACTION = "verifyEmail";
+     private String VERIFY_SERVLET_AGAIN = "VerifyCodeAgainServlet";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -97,6 +98,8 @@ public class DispatchController extends HttpServlet {
                 url = LOAD_LIST_BOOKING_SERVLET;
             } else if (DELETE_REQUEST_FROM_USER.equals(btnAction)) {
                 url = DELETE_REQUEST_SERVLET;
+            } else if (VERIFY_EMAIL_ACTION.equals(btnAction)) {
+                url = VERIFY_SERVLET_AGAIN;
             }
         } catch (Exception e) {
 

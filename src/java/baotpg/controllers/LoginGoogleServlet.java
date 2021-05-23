@@ -31,6 +31,9 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "LoginGoogleServlet", urlPatterns = {"/LoginGoogleServlet"})
 public class LoginGoogleServlet extends HttpServlet {
 
+    private String SUCCESS = "SearchServlet";
+    private String FAIL = "Login.jsp";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,36 +46,35 @@ public class LoginGoogleServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        String url = SUCCESS;
         String code = request.getParameter("code");
         HttpSession session = request.getSession();
         if (code == null || code.isEmpty()) {
-            RequestDispatcher dis = request.getRequestDispatcher("Login.jsp");
-            dis.forward(request, response);
+            url = FAIL;
         } else {
-            String accessToken = GoogleUtils.getToken(code);
-            GooglePojo googlePojo = GoogleUtils.getUserInfo(accessToken);
-            request.setAttribute("id", googlePojo.getId());
-            request.setAttribute("name", googlePojo.getName());
-            request.setAttribute("email", googlePojo.getEmail());
-            System.out.println("googlePojo" + googlePojo.getEmail());
-            UsersDAO userDAO = new UsersDAO();
-            if (googlePojo.getEmail() != null) {
-                try {
+            try {
+                String accessToken = GoogleUtils.getToken(code);
+                GooglePojo googlePojo = GoogleUtils.getUserInfo(accessToken);
+                request.setAttribute("id", googlePojo.getId());
+                request.setAttribute("name", googlePojo.getName());
+                request.setAttribute("email", googlePojo.getEmail());
+                System.out.println("googlePojo" + googlePojo.getEmail());
+                UsersDAO userDAO = new UsersDAO();
+                if (googlePojo.getEmail() != null) {
                     boolean checkExistAccount = userDAO.checkDuplicateEmail(googlePojo.getEmail());
                     if (!checkExistAccount) {
                         boolean isAdd = userDAO.insertUser(new UserDTO("", "", "", "", googlePojo.getEmail(), 2, 1, Date.valueOf(java.time.LocalDate.now())));
                     }
                     session.setAttribute("loginGG", googlePojo.getEmail());
-                } catch (SQLException ex) {
-                    Logger.getLogger(LoginGoogleServlet.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NamingException ex) {
-                    Logger.getLogger(LoginGoogleServlet.class.getName()).log(Level.SEVERE, null, ex);
-                } finally {
-                    RequestDispatcher dis = request.getRequestDispatcher("LoadProductServlet");
-                    dis.forward(request, response);
                 }
+            } catch (SQLException ex) {
+                Logger.getLogger(LoginGoogleServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NamingException ex) {
+                Logger.getLogger(LoginGoogleServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }finally{
+//                request.getRequestDispatcher(url).forward(request, response);
+                    response.sendRedirect(url);
             }
-
         }
     }
 

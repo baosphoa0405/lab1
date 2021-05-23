@@ -5,14 +5,11 @@
  */
 package baotpg.controllers;
 
-import baotpg.requests.RequestDTO;
-import baotpg.requests.RequestsDAO;
-import baotpg.resources.ResourceDTO;
-import baotpg.resources.ResourcesDAO;
 import baotpg.users.UserDTO;
+import baotpg.users.UsersDAO;
+import baotpg.utils.SendEmail;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,12 +25,11 @@ import javax.servlet.http.HttpSession;
  *
  * @author Admin
  */
-@WebServlet(name = "BookingServlet", urlPatterns = {"/BookingServlet"})
-public class BookingServlet extends HttpServlet {
-
-    private String SUCCESS = "SearchServlet";
+@WebServlet(name = "VerifyCodeAgainServlet", urlPatterns = {"/VerifyCodeAgainServlet"})
+public class VerifyCodeAgainServlet extends HttpServlet {
+    private String SUCCESS = "Verify.jsp";
     private String FAIL = "Login.jsp";
-
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -48,45 +44,32 @@ public class BookingServlet extends HttpServlet {
         String url = SUCCESS;
         try {
             response.setContentType("text/html;charset=UTF-8");
+            SendEmail sm = new SendEmail();
+            String codeRandom = sm.getRandom();
             HttpSession session = request.getSession();
-            UserDTO user = (UserDTO) session.getAttribute("user");
-            String emailUserLoginGG = (String) session.getAttribute("loginGG");
-            if (user == null && emailUserLoginGG == null) {
-                url = FAIL;
-            } else {
-                String productID = request.getParameter("productID");
-                RequestsDAO requestDAO = new RequestsDAO();
-                ResourcesDAO resourceDAO = new ResourcesDAO();
-                HttpSession sesion = request.getSession();
-                String emailLoginGG = (String) sesion.getAttribute("loginGG");
-                RequestDTO requestBooking = null;
-                ResourceDTO resource = resourceDAO.getDetailResource(productID);
-                if (resource.getQuanlity() >= 1) {
-                    if (user != null) {
-                        requestBooking = new RequestDTO(0, 1, Date.valueOf(java.time.LocalDate.now()), user.getEmail(), productID);
-                    }
-                    if (emailLoginGG != null) {
-                        requestBooking = new RequestDTO(0, 1, Date.valueOf(java.time.LocalDate.now()), emailLoginGG, productID);
-                    }
-                    boolean isBooking = requestDAO.bookingResource(requestBooking);
-                    if (isBooking) {
-                        request.setAttribute("bookingSuccess", "Booking SUCCESS");
-                    } else {
-                        request.setAttribute("bookingFail", "Booking FAIL");
-                    }
+            String email = request.getParameter("email").trim();
+            String password = request.getParameter("password").trim();
+            UsersDAO userDAO = new UsersDAO();
+            UserDTO user = userDAO.checkLogin(email, password);
+            if (user != null) {
+                boolean isEmail = sm.sendEmail(user, codeRandom);
+                if (isEmail) {
+                    request.setAttribute("emailUser", user.getEmail());
+                    session.setAttribute("codeRandom", codeRandom);
                 } else {
-                    request.setAttribute("errBooking", "Please booking another resource");
-                    request.setAttribute("idProductOutOfNumber", resource.getProductID());
+                    System.out.println("failed to send verification email");
                 }
+            } else {
+                url = FAIL; 
+                request.setAttribute("error", "user or password wrong");
             }
-        } catch (NamingException ex) {
-            Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(BookingServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
+            Logger.getLogger(VerifyCodeAgainServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(VerifyCodeAgainServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
             request.getRequestDispatcher(url).forward(request, response);
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

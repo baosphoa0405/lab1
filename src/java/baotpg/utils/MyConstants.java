@@ -28,4 +28,10 @@ public class MyConstants {
     public static int STATUS_REQUEST_ACTIVE = 3;
     public static int STATUS_REQUEST_DELETE = 4;
     
+    public static int STATUS_ACCOUNT_NEW = 1;
+    public static int STATUS_ACCOUNT_ACTIVE = 2;
+    
+    public static int ROLE_ACCOUNT_USER = 1;
+    public static int ROLE_ACCOUNT_ADMIN = 2;
+    
 }

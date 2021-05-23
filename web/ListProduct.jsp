@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>ListProduct</title>
+        <title>ListProduct JSP</title>
         <style>
             .pagination a {
                 color: black;
@@ -35,6 +35,9 @@
     </head>
     <body>
         <c:if test="${empty sessionScope.user && empty sessionScope.loginGG && empty sessionScope.admin}">
+            <c:redirect url="Login.jsp"/>
+        </c:if>
+        <c:if test="${sessionScope.user.statusID eq  1}">
             <c:redirect url="Login.jsp"/>
         </c:if>
         <div style="display: flex; align-items: center">
@@ -65,7 +68,7 @@
             Search <input type="text" name="nameSearch" value="${requestScope.nameSearch}" />
             <label for="date">date</label>
             <input type="date" id="date" name="date"
-                   value=""
+                   value="${requestScope.date}"
                    min="" max="">
             <input type="submit" name="btnAction" value="search" />
         </form>
@@ -83,7 +86,6 @@
                 </tr>
             </thead>
             <tbody>
-                <!--ko seach gì hết-->
                 <c:if test="${not empty requestScope.listReourcesPagnination}">
                     <c:forEach var="item" items="${requestScope.listReourcesPagnination}">
                         <tr style="color: ${requestScope.idProductOutOfNumber eq item.getProductID() || item.getQuanlity() eq 0  ? "red" : "black"}">

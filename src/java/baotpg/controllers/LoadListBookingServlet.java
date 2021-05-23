@@ -113,15 +113,14 @@ public class LoadListBookingServlet extends HttpServlet {
                         request.setAttribute("emptyListRequestBooking", "Empty List Request Booking");
                     }
                 }
-
+                request.setAttribute("listStatusRequest", listStatusRequest);
+                request.setAttribute("listResouces", listResources);
+                request.setAttribute("quanityPageSize", quanityPageSize);
+                request.setAttribute("listRequestBooking", listRequestBooking);
+                request.setAttribute("index", index);
+                request.setAttribute("nameProduct", nameProduct);
+                request.setAttribute("dateSearch", date);
             }
-            request.setAttribute("listStatusRequest", listStatusRequest);
-            request.setAttribute("listResouces", listResources);
-            request.setAttribute("quanityPageSize", quanityPageSize);
-            request.setAttribute("listRequestBooking", listRequestBooking);
-            request.setAttribute("index", index);
-            request.setAttribute("nameProduct", nameProduct);
-            request.setAttribute("dateSearch", date);
             System.out.println("dada" + url);
         } catch (NamingException ex) {
             Logger.getLogger(LoadListBookingServlet.class.getName()).log(Level.SEVERE, null, ex);

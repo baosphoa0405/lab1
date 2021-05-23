@@ -30,6 +30,12 @@
         <a href="https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=http://localhost:8084/J3.L.P0016/LoginGoogleServlet&response_type=code
            &client_id=410682010873-rjejja7nbfg3cjr7nvhorsliptu90eva.apps.googleusercontent.com&approval_prompt=force">Login With Google</a> 
         <a href="Register.jsp">Register Account</a>
+        <div>
+            <h1 style="color: red">${requestScope.unConfirmedEmail}</h1>
+            <c:if test="${not empty requestScope.unConfirmedEmail}">
+                <a href="DispatchController?btnAction=verifyEmail&email=${requestScope.valueEmail}&password=${requestScope.valuePW}">Verify Email</a>
+            </c:if>
+        </div>
         <script src='https://www.google.com/recaptcha/api.js'></script>
     </body>
 </html>
