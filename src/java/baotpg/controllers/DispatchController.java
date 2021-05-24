@@ -49,7 +49,11 @@ public class DispatchController extends HttpServlet {
     private String DELETE_REQUEST_FROM_USER = "Delete Request";
     private String DELETE_REQUEST_SERVLET = "DeleteRequestFromUser";
     private String VERIFY_EMAIL_ACTION = "verifyEmail";
-     private String VERIFY_SERVLET_AGAIN = "VerifyCodeAgainServlet";
+    private String VERIFY_SERVLET_AGAIN = "VerifyCodeAgainServlet";
+    private String VIEW_RESOURCE_ACTION = "View Course";
+    private String VIEW_RESOURCE_SERVLET = "ViewResourceServlet";
+    private String BACK_TO_LIST_BOOKING = "backToListBooking";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -100,9 +104,13 @@ public class DispatchController extends HttpServlet {
                 url = DELETE_REQUEST_SERVLET;
             } else if (VERIFY_EMAIL_ACTION.equals(btnAction)) {
                 url = VERIFY_SERVLET_AGAIN;
+            } else if (VIEW_RESOURCE_ACTION.equals(btnAction)) {
+                url = VIEW_RESOURCE_SERVLET;
+            } else if (BACK_TO_LIST_BOOKING.equals(btnAction)) {
+                url = LOAD_LIST_BOOKING_SERVLET;
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             System.out.println("url" + url);
             request.getRequestDispatcher(url).forward(request, response);

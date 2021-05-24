@@ -56,6 +56,7 @@
                     <th>Waiting</th>
                     <th>Request Successfully</th>
                     <th>Delete</th>
+                    <th>View</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,7 +86,7 @@
                                     <input type="submit" value="Delete Request" name="btnAction"/>
                                 </form>
                             </td>
-                           
+
                         </c:if>
                         <c:if test="${item.statusReqID ne 1}">
                             <td>None</td>
@@ -98,11 +99,19 @@
                                     <input type="submit" value="Delete Request" name="btnAction" ${item.statusReqID ne 1 ? "disabled":""}/>
                                 </form>
                             </td>
-                             <c:if test="${requestScope.requestID eq item.requestID}">
+                            <c:if test="${requestScope.requestID eq item.requestID}">
                                 <c:if test="${not empty requestScope.successDelete}">
                                     <td style="color: green">${requestScope.successDelete}</td>    
                                 </c:if>
                             </c:if>
+                        </c:if>
+                        <c:if test="${item.statusReqID eq 3}">
+                            <td>
+                                <form action="DispatchController" method="Post">
+                                    <input type="hidden" name="productID" value="${item.productID}" />
+                                    <input type="submit" name="btnAction" value="View Course" />
+                                </form>
+                            </td>
                         </c:if>
                     </tr>
                 </c:forEach>

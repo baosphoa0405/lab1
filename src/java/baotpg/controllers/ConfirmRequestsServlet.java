@@ -45,6 +45,8 @@ public class ConfirmRequestsServlet extends HttpServlet {
             String requestID = request.getParameter("requestID");
             String isConfirm = request.getParameter("flag");
             String productID = request.getParameter("productID");
+            String date = request.getParameter("date");
+            String key = request.getParameter("key");
             RequestsDAO requestDAO = new RequestsDAO();
             ResourcesDAO resourceDAO = new ResourcesDAO();
             ResourceDTO resource = resourceDAO.getDetailResource(productID);
@@ -56,7 +58,7 @@ public class ConfirmRequestsServlet extends HttpServlet {
                     if (updateQuanity && isStatusActive) {
                         request.setAttribute("successConfirm", "Confirm successfully rquestID " + requestID);
                     }
-                }else{
+                } else {
                     request.setAttribute("errorConfirm", "Sorry quanity resource " + requestID + " = " + resource.getQuanlity());
                 }
                 // giam so luong resource, change status thanh Active
@@ -64,11 +66,13 @@ public class ConfirmRequestsServlet extends HttpServlet {
                 System.out.println("deny");
                 // change status thanh Delete
                 boolean isStatusDelete = requestDAO.updateStatusRequest(Integer.parseInt(requestID), MyConstants.STATUS_REQUEST_DELETE);
-                 boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() + 1);
+                boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() + 1);
                 if (isStatusDelete && updateQuanity) {
                     request.setAttribute("deleteConfirm", "Deny successfully requestID " + requestID);
                 }
             }
+            request.setAttribute("key", key);
+            request.setAttribute("date", date);
             request.setAttribute("requestID", requestID);
         } catch (NamingException ex) {
             Logger.getLogger(ConfirmRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);

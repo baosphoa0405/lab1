@@ -104,6 +104,8 @@
                         </c:forEach>
                 <form method="Post" action="DispatchController" >
                     <td>
+                        <input type="hidden" placeholder="search content" name="key" value="${requestScope.key}" />
+                        <input type="hidden" name="date" value="${requestScope.date}" />
                         <input type="hidden" name="productID" value="${item.productID}" />
                         <input type="hidden" name="flag" value="true" />
                         <input type="hidden" name="requestID" value="${item.requestID}" />
@@ -114,6 +116,8 @@
                 </form>
                 <form method="Post" action="DispatchController" >
                     <td>
+                        <input type="hidden" placeholder="search content" name="key" value="${requestScope.key}" />
+                        <input type="hidden" name="date" value="${requestScope.date}" />
                         <input type="hidden" name="productID" value="${item.productID}" />
                         <input type="hidden" name="flag" value="false" />
                         <input type="hidden" name="requestID" value="${item.requestID}" />
