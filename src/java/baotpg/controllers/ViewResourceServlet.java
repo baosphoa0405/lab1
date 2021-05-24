@@ -48,21 +48,21 @@ public class ViewResourceServlet extends HttpServlet {
         UserDTO user = (UserDTO) session.getAttribute("user");
         String emailUserLoginGG = (String) session.getAttribute("loginGG");
         String productID = request.getParameter("productID");
-        
-        ResourcesDAO resourceDAO = new ResourcesDAO();
-        if (user == null && emailUserLoginGG == null) {
-            url = FAIL;
-        } else {
-            try {
+        try {
+            ResourcesDAO resourceDAO = new ResourcesDAO();
+            if (user == null && emailUserLoginGG == null) {
+                url = FAIL;
+            } else {
                 ResourceDTO reource = resourceDAO.getDetailResource(productID);
                 request.setAttribute("resource", reource);
-            } catch (NamingException ex) {
-                Logger.getLogger(ViewResourceServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-                Logger.getLogger(ViewResourceServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }finally{
-                request.getRequestDispatcher(url).forward(request, response);
+
             }
+        } catch (NamingException ex) {
+            Logger.getLogger(ViewResourceServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(ViewResourceServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
         }
 
     }
