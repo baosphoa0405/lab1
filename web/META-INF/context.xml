@@ -3,9 +3,9 @@
     <Resource name="DV009"
               type="javax.sql.DataSource" 
               auth="Container"
-              url="jdbc:sqlserver://localhost:1433;databaseName=ResourceSharing"
+              url="jdbc:sqlserver://lab1.cppihlq3kwbc.us-east-2.rds.amazonaws.com:1433;databaseName=ResourceSharing"
               driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
               username="sa"
-              password="12345"
+              password="12345678"
     />
 </Context>
