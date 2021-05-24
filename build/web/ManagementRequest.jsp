@@ -74,9 +74,10 @@
         </form>
         <h1 style="color: green">${requestScope.successConfirm}</h1>
         <h1 style="color: green">${requestScope.deleteConfirm}</h1>
-        <table border="1">
+        <table style="border: none; text-align: center">
             <thead>
                 <tr>
+                    <th>RequestID</th>
                     <th>DateBook</th>
                     <th>email</th>
                     <th>productName</th>
@@ -88,6 +89,7 @@
             <tbody>
                 <c:forEach var="item" items="${requestScope.arrayListRequest}">
                     <tr>
+                        <td>${item.requestID}</td>
                         <td>${item.dateBook}</td>
                         <td>${item.email}</td>
                         <c:forEach var="a" items="${requestScope.listResource}">
@@ -105,7 +107,7 @@
                         <input type="hidden" name="productID" value="${item.productID}" />
                         <input type="hidden" name="flag" value="true" />
                         <input type="hidden" name="requestID" value="${item.requestID}" />
-                        <c:if test="${item.statusReqID ne 4}">
+                        <c:if test="${item.statusReqID eq 1}">
                             <input type="submit" value="Accept" name="btnAction" />
                         </c:if>
                     </td>
@@ -115,15 +117,31 @@
                         <input type="hidden" name="productID" value="${item.productID}" />
                         <input type="hidden" name="flag" value="false" />
                         <input type="hidden" name="requestID" value="${item.requestID}" />
-                        <c:if test="${item.statusReqID ne 4}">
+                        <c:if test="${item.statusReqID eq 1 || item.statusReqID eq 3 }">
                             <input type="submit" value="Delete" name="btnAction" />
                         </c:if>
                     </td>
                 </form>
+                <c:if test="${item.requestID eq requestScope.requestID}">
+                    <c:if test="${not empty requestScope.successConfirm}">
+                    <td style="color: green">${requestScope.successConfirm}</td>
+                    </c:if>      
+                </c:if>
+                <c:if test="${item.requestID eq requestScope.requestID}">
+                    <c:if test="${not empty requestScope.deleteConfirm}">
+                        <td style="color: red">${requestScope.deleteConfirm}</td>
+                    </c:if>  
+                </c:if>
+                <c:if test="${item.requestID eq requestScope.requestID}">
+                    <c:if test="${not empty requestScope.errorConfirm}">
+                        <td style="color: red">${requestScope.errorConfirm}</td>
+                    </c:if>  
+                </c:if>
+
             </tr>    
         </c:forEach>
-            <c:if test="${empty requestScope.arrayListRequest}">
-                <h1>List Request Empty</h1>
+        <c:if test="${empty requestScope.arrayListRequest}">
+            <h1>List Request Empty</h1>
         </c:if>
     </tbody>
 </table>

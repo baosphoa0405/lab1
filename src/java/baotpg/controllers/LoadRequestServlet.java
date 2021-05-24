@@ -11,6 +11,7 @@ import baotpg.resources.ResourceDTO;
 import baotpg.resources.ResourcesDAO;
 import baotpg.statusRequest.StatusRequestDTO;
 import baotpg.statusRequest.StatusRequestsDAO;
+import baotpg.users.UserDTO;
 import baotpg.utils.MyConstants;
 import java.io.IOException;
 import java.sql.Date;
@@ -24,6 +25,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -31,7 +33,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "LoadRequestServlet", urlPatterns = {"/LoadRequestServlet"})
 public class LoadRequestServlet extends HttpServlet {
-
+    private String SUCCESS = "ManagementRequest.jsp";
+    private String FAIL = "Login.jsp";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,63 +46,76 @@ public class LoadRequestServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        String url = SUCCESS;
         try {
-            response.setContentType("text/html;charset=UTF-8");
-            String keySearch = request.getParameter("key"); // vua2 search name product , email
-            String indexPage = request.getParameter("index");
-            String statusRequest = request.getParameter("StatusRequest");
-            String date = request.getParameter("date");
-            Date dateSearch = null;
-            if (date != null && !date.isEmpty()) {
-                dateSearch = Date.valueOf(date);
-            }
-
-            if (keySearch == null) {
-                keySearch = "";
-            }
-            if (statusRequest == null) {
-                statusRequest = "";
-            }
-
-            RequestsDAO requestDaos = new RequestsDAO();
-            StatusRequestsDAO statusRequestDAO = new StatusRequestsDAO();
-            ResourcesDAO reourceDAO = new ResourcesDAO();
-
-            int countsListRequest = requestDaos.getCountRequests(keySearch, statusRequest, dateSearch);
-            int countPageSize = countsListRequest / MyConstants.QUANITY_ITEM_IN_PAGE;
-            if (countsListRequest % MyConstants.QUANITY_ITEM_IN_PAGE != 0) {
-                countPageSize += 1;
-            }
-
-            ArrayList<ResourceDTO> listResources = reourceDAO.getAllListReources();
-            ArrayList<StatusRequestDTO> listStatusRequest = statusRequestDAO.getAllListStatusRequest();
-            ArrayList<RequestDTO> arrayListRequest = new ArrayList<>();
-            if (indexPage == null) {
-                arrayListRequest = requestDaos.getAllRequest(1, keySearch, statusRequest, dateSearch);
-                request.setAttribute("index", 1);
+            HttpSession session = request.getSession();
+            UserDTO admin = (UserDTO) session.getAttribute("admin");
+            if (admin == null) {
+                url = FAIL;
             } else {
-                arrayListRequest = requestDaos.getAllRequest(Integer.parseInt(indexPage), keySearch, statusRequest, dateSearch);
-                request.setAttribute("index", indexPage);
+                String keySearch = request.getParameter("key"); // vua2 search name product , email
+                String indexPage = request.getParameter("index");
+                String statusRequest = request.getParameter("StatusRequest");
+                String date = request.getParameter("date");
+                Date dateSearch = null;
+                if (date != null && !date.isEmpty()) {
+                    dateSearch = Date.valueOf(date);
+                }
+
+                if (keySearch == null) {
+                    keySearch = "";
+                }
+                if (statusRequest == null) {
+                    statusRequest = "";
+                }
+
+                RequestsDAO requestDaos = new RequestsDAO();
+                StatusRequestsDAO statusRequestDAO = new StatusRequestsDAO();
+                ResourcesDAO reourceDAO = new ResourcesDAO();
+
+                int countsListRequest = requestDaos.getCountRequests(keySearch, statusRequest, dateSearch);
+                int countPageSize = countsListRequest / MyConstants.QUANITY_ITEM_IN_PAGE;
+                if (countsListRequest % MyConstants.QUANITY_ITEM_IN_PAGE != 0) {
+                    countPageSize += 1;
+                }
+
+                ArrayList<ResourceDTO> listResources = reourceDAO.getAllListReources();
+                ArrayList<StatusRequestDTO> listStatusRequest = statusRequestDAO.getAllListStatusRequest();
+                ArrayList<RequestDTO> arrayListRequest = new ArrayList<>();
+                if (indexPage == null) {
+                    arrayListRequest = requestDaos.getAllRequest(1, keySearch, statusRequest, dateSearch);
+                    request.setAttribute("index", 1);
+                } else {
+                    arrayListRequest = requestDaos.getAllRequest(Integer.parseInt(indexPage), keySearch, statusRequest, dateSearch);
+                    request.setAttribute("index", indexPage);
+                }
+
+                for (int i = 0; i < listStatusRequest.size(); i++) {
+                    if (listStatusRequest.get(i).getStatusReqName().equalsIgnoreCase("inactive")) {
+                        listStatusRequest.remove(i);
+                    }
+                }
+                for (int i = 0; i < arrayListRequest.size(); i++) {
+                    if (arrayListRequest.get(i).getStatusReqID() == 2) {
+                        arrayListRequest.remove(i);
+                    }
+                }
+                request.setAttribute("arrayListRequest", arrayListRequest);
+                request.setAttribute("countPageSize", countPageSize);
+                request.setAttribute("StatusRequest", statusRequest);
+                request.setAttribute("listStatusRequest", listStatusRequest);
+                request.setAttribute("listResource", listResources);
+                request.setAttribute("key", keySearch);
+                request.setAttribute("date", date);
             }
 
-//            for (int i = 0; i < listStatusRequest.size(); i++) {
-//                if (listStatusRequest.get(i).getStatusReqName().equalsIgnoreCase("inactive")) {
-//                    listStatusRequest.remove(i);
-//                }
-//            }
-            request.setAttribute("arrayListRequest", arrayListRequest);
-            request.setAttribute("countPageSize", countPageSize);
-            request.setAttribute("StatusRequest", statusRequest);
-            request.setAttribute("listStatusRequest", listStatusRequest);
-            request.setAttribute("listResource", listResources);
-            request.setAttribute("key", keySearch);
-            request.setAttribute("date", date);
         } catch (SQLException ex) {
             Logger.getLogger(LoadRequestServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NamingException ex) {
             Logger.getLogger(LoadRequestServlet.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            request.getRequestDispatcher("ManagementRequest.jsp").forward(request, response);
+            request.getRequestDispatcher(url).forward(request, response);
         }
 
     }

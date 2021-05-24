@@ -5,6 +5,7 @@
  */
 package baotpg.controllers;
 
+import baotpg.requests.RequestDTO;
 import baotpg.requests.RequestsDAO;
 import baotpg.resources.ResourceDTO;
 import baotpg.resources.ResourcesDAO;
@@ -48,29 +49,35 @@ public class ConfirmRequestsServlet extends HttpServlet {
             ResourcesDAO resourceDAO = new ResourcesDAO();
             ResourceDTO resource = resourceDAO.getDetailResource(productID);
             if (Boolean.parseBoolean(isConfirm)) {
-                System.out.println("accept");
-                // giam so luong resource, change status thanh Active
-                boolean isStatusActive = requestDAO.updateStatusRequest(Integer.parseInt(requestID), MyConstants.STATUS_REQUEST_ACTIVE);
-                boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() - 1);
-                if (updateQuanity && isStatusActive) {
-                    request.setAttribute("successConfirm", "Confirm successfully");
+                // kiểm tra số lượng
+                if (resource.getQuanlity() > 0) {
+                    boolean isStatusActive = requestDAO.updateStatusRequest(Integer.parseInt(requestID), MyConstants.STATUS_REQUEST_ACTIVE);
+                    boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() - 1);
+                    if (updateQuanity && isStatusActive) {
+                        request.setAttribute("successConfirm", "Confirm successfully rquestID " + requestID);
+                    }
+                }else{
+                    request.setAttribute("errorConfirm", "Sorry quanity resource " + requestID + " = " + resource.getQuanlity());
                 }
+                // giam so luong resource, change status thanh Active
             } else {
                 System.out.println("deny");
                 // change status thanh Delete
                 boolean isStatusDelete = requestDAO.updateStatusRequest(Integer.parseInt(requestID), MyConstants.STATUS_REQUEST_DELETE);
-                if (isStatusDelete) {
-                    request.setAttribute("deleteConfirm", "Deny successfully");
+                 boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() + 1);
+                if (isStatusDelete && updateQuanity) {
+                    request.setAttribute("deleteConfirm", "Deny successfully requestID " + requestID);
                 }
             }
+            request.setAttribute("requestID", requestID);
         } catch (NamingException ex) {
             Logger.getLogger(ConfirmRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ConfirmRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }finally{
+        } finally {
             request.getRequestDispatcher("LoadRequestServlet").forward(request, response);
         }
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
