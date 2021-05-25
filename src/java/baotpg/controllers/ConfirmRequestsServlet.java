@@ -66,8 +66,7 @@ public class ConfirmRequestsServlet extends HttpServlet {
                 System.out.println("deny");
                 // change status thanh Delete
                 boolean isStatusDelete = requestDAO.updateStatusRequest(Integer.parseInt(requestID), MyConstants.STATUS_REQUEST_DELETE);
-                boolean updateQuanity = resourceDAO.updateQuanityResource(productID, resource.getQuanlity() + 1);
-                if (isStatusDelete && updateQuanity) {
+                if (isStatusDelete) {
                     request.setAttribute("deleteConfirm", "Deny successfully requestID " + requestID);
                 }
             }

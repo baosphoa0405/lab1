@@ -45,6 +45,7 @@
         </div>
         <h1 style="color: green">${requestScope.successDelete}</h1>
         <h1 style="color: green">${requestScope.errorDelete}</h1>
+        <h1 style="color: green">${requestScope.errorStatusViewCourse}</h1>
         <table style="border: none; text-align: center">
             <thead>
                 <tr>
@@ -108,6 +109,7 @@
                         <c:if test="${item.statusReqID eq 3}">
                             <td>
                                 <form action="DispatchController" method="Post">
+                                    <input type="hidden" name="requestID" value="${item.requestID}" />
                                     <input type="hidden" name="productID" value="${item.productID}" />
                                     <input type="submit" name="btnAction" value="View Course" />
                                 </form>

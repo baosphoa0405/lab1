@@ -53,6 +53,8 @@ public class DispatchController extends HttpServlet {
     private String VIEW_RESOURCE_ACTION = "View Course";
     private String VIEW_RESOURCE_SERVLET = "ViewResourceServlet";
     private String BACK_TO_LIST_BOOKING = "backToListBooking";
+    private String DELETE_VIEW_COURSE_ACTION = "Delete View Course";
+    private String DELETE_VIEW_COURSE = "DeleteViewCourse";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -108,6 +110,8 @@ public class DispatchController extends HttpServlet {
                 url = VIEW_RESOURCE_SERVLET;
             } else if (BACK_TO_LIST_BOOKING.equals(btnAction)) {
                 url = LOAD_LIST_BOOKING_SERVLET;
+            }else if (DELETE_VIEW_COURSE_ACTION.equals(btnAction)) {
+               url = DELETE_VIEW_COURSE;
             }
         } catch (Exception e) {
             e.printStackTrace();

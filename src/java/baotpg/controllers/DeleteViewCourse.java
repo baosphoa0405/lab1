@@ -13,10 +13,6 @@ import baotpg.users.UserDTO;
 import baotpg.utils.MyConstants;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,12 +24,11 @@ import javax.servlet.http.HttpSession;
  *
  * @author Admin
  */
-@WebServlet(name = "ViewResourceServlet", urlPatterns = {"/ViewResourceServlet"})
-public class ViewResourceServlet extends HttpServlet {
+@WebServlet(name = "DeleteViewCourse", urlPatterns = {"/DeleteViewCourse"})
+public class DeleteViewCourse extends HttpServlet {
 
-    private String SUCCESS = "DetailResource.jsp";
+    private String SUCCESS = "LoadRequestServlet";
     private String FAIL = "Login.jsp";
-    private String FAIL_STATUS = "LoadListBookingServlet";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,35 +42,46 @@ public class ViewResourceServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        HttpSession session = request.getSession();
         String url = SUCCESS;
-        UserDTO user = (UserDTO) session.getAttribute("user");
-        String emailUserLoginGG = (String) session.getAttribute("loginGG");
-        String productID = request.getParameter("productID");
-        String requestID = request.getParameter("requestID");
-        RequestsDAO requestsDAO = new RequestsDAO();
         try {
-            ResourcesDAO resourceDAO = new ResourcesDAO();
-            if (user == null && emailUserLoginGG == null) {
+            HttpSession session = request.getSession();
+            UserDTO admin = (UserDTO) session.getAttribute("admin");
+            if (admin == null) {
                 url = FAIL;
             } else {
-                RequestDTO requestDetail = requestsDAO.getDetailRequest(Integer.parseInt(requestID));
-                if (requestDetail.getStatusReqID()== MyConstants.STATUS_REQUEST_DELETE) {
-                    url = FAIL_STATUS;
-                    request.setAttribute("errorStatusViewCourse", "Sorry Resource of you request deleted");
-                } else {
-                    ResourceDTO reource = resourceDAO.getDetailResource(productID);
-                    request.setAttribute("resource", reource);
+                ResourcesDAO resourcesDAO = new ResourcesDAO();
+                String keySearch = request.getParameter("key"); // vua2 search name product , email
+                String indexPage = request.getParameter("index");
+                String statusRequest = request.getParameter("StatusRequest");
+                String date = request.getParameter("date");
+                String productID = request.getParameter("productID");
+                String requestID = request.getParameter("requestID");
+                RequestsDAO requestsDAO = new RequestsDAO();
+
+                if (requestID != null) {
+                    RequestDTO requestDetail = requestsDAO.getDetailRequest(Integer.parseInt(requestID));
+                    if (requestDetail.getStatusReqID() == MyConstants.STATUS_REQUEST_ACTIVE) {
+                        boolean isStatusActive = requestsDAO.updateStatusRequest(Integer.parseInt(requestID), MyConstants.STATUS_REQUEST_DELETE);
+                        ResourceDTO resource = resourcesDAO.getDetailResource(productID);
+                        boolean updateQuanity = resourcesDAO.updateQuanityResource(productID, resource.getQuanlity() + 1);
+                        if (updateQuanity && isStatusActive) {
+                            request.setAttribute("successDeleteView", "success delete view resource");
+                        }
+                    } else {
+                        request.setAttribute("errorDeleteView", "error Delete view resource");
+                    }
+
                 }
+                request.setAttribute("index", indexPage);
+                request.setAttribute("StatusRequest", statusRequest);
+                request.setAttribute("key", keySearch);
+                request.setAttribute("date", date);
             }
-        } catch (NamingException ex) {
-            Logger.getLogger(ViewResourceServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(ViewResourceServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

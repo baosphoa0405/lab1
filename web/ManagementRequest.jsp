@@ -74,6 +74,8 @@
         </form>
         <h1 style="color: green">${requestScope.successConfirm}</h1>
         <h1 style="color: green">${requestScope.deleteConfirm}</h1>
+        <h1 style="color: green">${requestScope.successDeleteView}</h1>
+        <h1 style="color: red">${requestScope.errorDeleteView}</h1>
         <table style="border: none; text-align: center">
             <thead>
                 <tr>
@@ -84,6 +86,7 @@
                     <th>status</th>
                     <th>Accept</th>
                     <th>Delete</th>
+                    <th>Delete View Course</th> 
                 </tr>
             </thead>
             <tbody>
@@ -121,14 +124,26 @@
                         <input type="hidden" name="productID" value="${item.productID}" />
                         <input type="hidden" name="flag" value="false" />
                         <input type="hidden" name="requestID" value="${item.requestID}" />
-                        <c:if test="${item.statusReqID eq 1 || item.statusReqID eq 3 }">
+                        <c:if test="${item.statusReqID eq 1}">
                             <input type="submit" value="Delete" name="btnAction" />
+                        </c:if>
+                    </td>
+                </form>
+                <form method="Post" action="DispatchController" >
+                    <td>
+                        <input type="hidden" placeholder="search content" name="key" value="${requestScope.key}" />
+                        <input type="hidden" name="date" value="${requestScope.date}" />
+                        <input type="hidden" name="productID" value="${item.productID}" />
+                        <input type="hidden" name="flag" value="false" />
+                        <input type="hidden" name="requestID" value="${item.requestID}" />
+                        <c:if test="${item.statusReqID eq 3}">
+                            <input type="submit" value="Delete View Course" name="btnAction" />
                         </c:if>
                     </td>
                 </form>
                 <c:if test="${item.requestID eq requestScope.requestID}">
                     <c:if test="${not empty requestScope.successConfirm}">
-                    <td style="color: green">${requestScope.successConfirm}</td>
+                        <td style="color: green">${requestScope.successConfirm}</td>
                     </c:if>      
                 </c:if>
                 <c:if test="${item.requestID eq requestScope.requestID}">
