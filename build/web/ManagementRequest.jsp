@@ -76,6 +76,7 @@
         <h1 style="color: green">${requestScope.deleteConfirm}</h1>
         <h1 style="color: green">${requestScope.successDeleteView}</h1>
         <h1 style="color: red">${requestScope.errorDeleteView}</h1>
+        <h1 style="color: red">${requestScope.errorInActiveRequest}</h1>
         <table style="border: none; text-align: center">
             <thead>
                 <tr>
